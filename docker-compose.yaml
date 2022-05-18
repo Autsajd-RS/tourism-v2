@@ -1,0 +1,25 @@
+version: "3.2"
+
+services:
+  tourism:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - net
+    ports:
+      - "30000:80"
+    volumes:
+      - ./:/var/www
+    environment:
+      APP_ENV: dev
+
+networks:
+  net:
+    attachable: true
+    driver: overlay
+volumes:
+###> doctrine/doctrine-bundle ###
+  db-data:
+###< doctrine/doctrine-bundle ###
