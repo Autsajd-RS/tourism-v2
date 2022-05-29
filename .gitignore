@@ -16,3 +16,6 @@ supervisord.pid
 src/Controller/TestController.php
 env.local
 ###> ANNOYING STUFF ###
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

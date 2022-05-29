@@ -77,8 +77,35 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.12"
     },
+    "gesdinet/jwt-refresh-token-bundle": {
+        "version": "v1.1.1"
+    },
     "laminas/laminas-code": {
         "version": "4.5.1"
+    },
+    "lcobucci/clock": {
+        "version": "2.2.0"
+    },
+    "lcobucci/jwt": {
+        "version": "4.1.5"
+    },
+    "lexik/jwt-authentication-bundle": {
+        "version": "2.15",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.5",
+            "ref": "5b2157bcd5778166a5696e42f552ad36529a07a6"
+        },
+        "files": [
+            "config/packages/lexik_jwt_authentication.yaml"
+        ]
+    },
+    "namshi/jose": {
+        "version": "7.2.3"
+    },
+    "nikic/php-parser": {
+        "version": "v4.13.2"
     },
     "psr/cache": {
         "version": "3.0.0"
@@ -91,6 +118,9 @@
     },
     "psr/log": {
         "version": "3.0.0"
+    },
+    "stella-maris/clock": {
+        "version": "0.1.4"
     },
     "symfony/cache": {
         "version": "v6.0.8"
@@ -177,6 +207,18 @@
     "symfony/http-kernel": {
         "version": "v6.0.8"
     },
+    "symfony/maker-bundle": {
+        "version": "1.43",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
+        }
+    },
+    "symfony/password-hasher": {
+        "version": "v6.0.8"
+    },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.25.0"
     },
@@ -186,8 +228,17 @@
     "symfony/polyfill-mbstring": {
         "version": "v1.25.0"
     },
+    "symfony/polyfill-php56": {
+        "version": "v1.20.0"
+    },
     "symfony/polyfill-php81": {
         "version": "v1.25.0"
+    },
+    "symfony/property-access": {
+        "version": "v6.0.8"
+    },
+    "symfony/property-info": {
+        "version": "v6.0.9"
     },
     "symfony/proxy-manager-bridge": {
         "version": "v6.0.6"
@@ -207,6 +258,27 @@
     },
     "symfony/runtime": {
         "version": "v6.0.8"
+    },
+    "symfony/security-bundle": {
+        "version": "6.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.0",
+            "ref": "8a5b112826f7d3d5b07027f93786ae11a1c7de48"
+        },
+        "files": [
+            "config/packages/security.yaml"
+        ]
+    },
+    "symfony/security-core": {
+        "version": "v6.0.8"
+    },
+    "symfony/security-csrf": {
+        "version": "v6.0.9"
+    },
+    "symfony/security-http": {
+        "version": "v6.0.9"
     },
     "symfony/service-contracts": {
         "version": "v3.0.1"
