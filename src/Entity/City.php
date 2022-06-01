@@ -11,6 +11,8 @@ use Doctrine\ORM\PersistentCollection;
 #[ORM\Entity(repositoryClass: CityRepository::class)]
 class City
 {
+    public const SUBOTICA_ID = 6;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
