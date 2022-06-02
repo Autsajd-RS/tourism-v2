@@ -7,24 +7,32 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: CityRepository::class)]
 class City
 {
+    public const SERIALIZER_GROUP_CITY_LIST = "city:list";
     public const SUBOTICA_ID = 6;
+
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST])]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST])]
     private string $name;
 
     #[ORM\Column(type: 'float')]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST])]
     private float $lat;
 
     #[ORM\Column(type: 'float')]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST])]
     private float $lng;
 
     #[ORM\OneToMany(mappedBy: 'city', targetEntity: User::class)]

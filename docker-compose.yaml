@@ -39,7 +39,6 @@ services:
       MYSQL_PASSWORD: admin12345
     networks:
       - net
-
 networks:
   net:
     attachable: true
