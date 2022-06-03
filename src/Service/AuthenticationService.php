@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\DTO\ErrorResponse;
+use App\Entity\City;
 use App\Entity\User;
 use App\Message\UserRegistered;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +37,42 @@ class AuthenticationService
         }
 
         return $this->serializer->deserialize((string)$request->getContent(), User::class, 'json', $context);
+    }
+
+    public function bindCity(Request $request, User $user): ErrorResponse|User
+    {
+        try {
+            $params = json_decode((string)$request->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return new ErrorResponse(
+                message: 'Registration Error',
+                errors: [
+                    'request' => 'processing error'
+                ]
+            );
+        }
+
+        if (!isset($params->city)) {
+            return new ErrorResponse(
+                message: 'Registration Error',
+                errors: [
+                    'request' => 'bad request'
+                ]
+            );
+        }
+
+        $city = $this->entityManager->getRepository(City::class)->find($params->city);
+
+        if (!$city) {
+            return new ErrorResponse(
+                message: 'Registration Error',
+                errors: [
+                    'city' => 'not found'
+                ]
+            );
+        }
+
+        return $user->setCity($city);
     }
 
     public function validateUser(User $user, ?array $groups = null): ConstraintViolationListInterface

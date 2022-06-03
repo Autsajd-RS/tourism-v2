@@ -16,18 +16,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const ROLE_USER = 'ROLE_USER';
     public const ROLE_ADMIN = 'ROLE_ADMIN';
 
+    public const GROUP_REGISTER = 'register';
+    public const GROUP_READ = 'read';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups([self::GROUP_READ])]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     #[Assert\Email(message: 'Invalid email format')]
     #[Assert\NotBlank(message: 'Invalid email format')]
-    #[Groups(['register'])]
+    #[Groups([self::GROUP_REGISTER, self::GROUP_READ])]
     private string $email = '';
 
     #[ORM\Column(type: 'json')]
+    #[Groups([self::GROUP_READ])]
     private array $roles = [];
 
     #[ORM\Column(type: 'string')]
@@ -37,22 +42,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/",
         message: 'Invalid password'
     )]
-    #[Groups(['register'])]
+    #[Groups([self::GROUP_REGISTER])]
     private string|null $plainPassword = '';
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\Length(min: 2, max: 100, minMessage: 'Name too short', maxMessage: 'Name too long')]
     #[Assert\Regex(pattern: "/^[a-zA-Z\s]*$/", message: 'Only letters allowed')]
-    #[Groups(['register'])]
+    #[Groups([self::GROUP_REGISTER, self::GROUP_READ])]
     private string $firstname = '';
 
     #[Assert\Length(min: 2, max: 100, minMessage: 'Last Name too short', maxMessage: 'Last Name too long')]
     #[Assert\Regex(pattern: '/^[a-zA-Z\s]*$/', message: 'Only letters allowed')]
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['register'])]
+    #[Groups([self::GROUP_REGISTER, self::GROUP_READ])]
     private string $lastname = '';
 
     #[ORM\Column(type: 'boolean')]
+    #[Groups([self::GROUP_READ])]
     private bool $verified = false;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -63,7 +69,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToOne(targetEntity: City::class, inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
-    private $city;
+    #[Groups([self::GROUP_READ])]
+    private City $city;
 
     public function getId(): ?int
     {

@@ -3,14 +3,14 @@
 namespace App\Controller;
 
 use App\DTO\ErrorResponse;
+use App\Entity\User;
 use App\Service\AuthenticationService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AuthController extends AbstractController
+class AuthController extends BaseController
 {
     public function __construct(
         private AuthenticationService $authenticationService
@@ -21,7 +21,7 @@ class AuthController extends AbstractController
     #[Route(path: '/api/register', methods: ['POST'])]
     public function register(Request $request): JsonResponse
     {
-        $user = $this->authenticationService->userFromRequest(request: $request, groups: ['register']);
+        $user = $this->authenticationService->userFromRequest(request: $request, groups: [User::GROUP_REGISTER]);
 
         if (!$user) {
             return $this->json(new ErrorResponse(
@@ -29,7 +29,9 @@ class AuthController extends AbstractController
             ), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $violations = $this->authenticationService->validateUser(user: $user, groups: ['register']);
+        $user = $this->authenticationService->bindCity(request: $request, user: $user);
+
+        $violations = $this->authenticationService->validateUser(user: $user, groups: [User::GROUP_REGISTER]);
 
         if (count($violations) > 0) {
             return $this->json(new ErrorResponse(
@@ -40,7 +42,7 @@ class AuthController extends AbstractController
 
         $user = $this->authenticationService->registerUser($user);
 
-        return $this->json($user);
+        return $this->jsonUserRead($user);
     }
 
     #[Route(path: '/api/verify/{verificationCode}', methods: ['GET'])]
@@ -52,6 +54,6 @@ class AuthController extends AbstractController
             return $this->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return $this->json($response, Response::HTTP_OK);
+        return $this->jsonUserRead($response);
     }
 }

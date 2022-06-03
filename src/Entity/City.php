@@ -20,19 +20,19 @@ class City
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups([self::SERIALIZER_GROUP_CITY_LIST])]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ])]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([self::SERIALIZER_GROUP_CITY_LIST])]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ])]
     private string $name;
 
     #[ORM\Column(type: 'float')]
-    #[Groups([self::SERIALIZER_GROUP_CITY_LIST])]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ])]
     private float $lat;
 
     #[ORM\Column(type: 'float')]
-    #[Groups([self::SERIALIZER_GROUP_CITY_LIST])]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ])]
     private float $lng;
 
     #[ORM\OneToMany(mappedBy: 'city', targetEntity: User::class)]
