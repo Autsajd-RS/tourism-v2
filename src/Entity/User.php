@@ -61,6 +61,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime', nullable: true)]
     private DateTimeInterface|null $verificationTokenExpire = null;
 
+    #[ORM\ManyToOne(targetEntity: City::class, inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $city;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -206,6 +210,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVerificationTokenExpire(?DateTimeInterface $emailTokenExpire): self
     {
         $this->verificationTokenExpire = $emailTokenExpire;
+
+        return $this;
+    }
+
+    public function getCity(): ?City
+    {
+        return $this->city;
+    }
+
+    public function setCity(?City $city): self
+    {
+        $this->city = $city;
 
         return $this;
     }

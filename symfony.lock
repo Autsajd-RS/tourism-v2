@@ -107,6 +107,9 @@
             "config/packages/lexik_jwt_authentication.yaml"
         ]
     },
+    "monolog/monolog": {
+        "version": "2.6.0"
+    },
     "namshi/jose": {
         "version": "7.2.3"
     },
@@ -124,6 +127,18 @@
     },
     "nikic/php-parser": {
         "version": "v4.13.2"
+    },
+    "phpdocumentor/reflection-common": {
+        "version": "2.2.0"
+    },
+    "phpdocumentor/reflection-docblock": {
+        "version": "5.3.0"
+    },
+    "phpdocumentor/type-resolver": {
+        "version": "1.6.1"
+    },
+    "phpstan/phpdoc-parser": {
+        "version": "1.5.1"
     },
     "psr/cache": {
         "version": "3.0.0"
@@ -263,6 +278,21 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/monolog-bridge": {
+        "version": "v6.0.3"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.8",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.7",
+            "ref": "213676c4ec929f046dfde5ea8e97625b81bc0578"
+        },
+        "files": [
+            "config/packages/monolog.yaml"
+        ]
     },
     "symfony/messenger": {
         "version": "6.0",
@@ -428,5 +458,8 @@
     },
     "twig/twig": {
         "version": "v3.4.1"
+    },
+    "webmozart/assert": {
+        "version": "1.10.0"
     }
 }
