@@ -12,7 +12,7 @@ class UserRegisteredHandler
 {
     public function __construct(
         private MailService $mailService,
-        private string $baseUrl
+        private string $frontendUrl
     )
     {
     }
@@ -24,7 +24,7 @@ class UserRegisteredHandler
             ->setSubject(MailService::VERIFICATION_MAIL)
             ->setTemplateId(MailService::VERIFICATION_MAIL_ID)
             ->setDynamicTemplateData([
-                'verificationUrl' => $this->baseUrl . '/api/verify/' . $message->getVerificationCode()
+                'verificationUrl' => $this->frontendUrl . '/verify/' . $message->getVerificationCode()
             ]);
 
         $this->mailService->send($email);

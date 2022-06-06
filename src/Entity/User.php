@@ -5,12 +5,14 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity("email", message: "Uneti email je već zauzet")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const ROLE_USER = 'ROLE_USER';
@@ -29,8 +31,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private int $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    #[Assert\Email(message: 'Invalid email format')]
-    #[Assert\NotBlank(message: 'Invalid email format')]
+    #[Assert\Email(message: 'Loš format emaila')]
+    #[Assert\NotBlank(message: 'Polje ne sme da bude prazno')]
     #[Groups([self::GROUP_REGISTER, self::GROUP_READ])]
     private string $email = '';
 
@@ -41,27 +43,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string')]
     private string $password;
 
-    #[Assert\Regex(
-        pattern: "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/",
-        message: 'Invalid password'
-    )]
+    #[Assert\NotBlank(message: "Polje ne sme da bude prazno")]
+    #[Assert\Length(min: 8, minMessage: 'Lozinka je prekratka (min 8 karaktera)')]
     #[Groups([self::GROUP_REGISTER])]
     private string|null $plainPassword = '';
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\Length(min: 2, max: 100, minMessage: 'Name too short', maxMessage: 'Name too long')]
-    #[Assert\Regex(pattern: "/^[a-zA-Z\s]*$/", message: 'Only letters allowed')]
+    #[Assert\Length(min: 2, max: 100, minMessage: 'Ime je prekratko', maxMessage: 'Ime je predugačko')]
+    #[Assert\Regex(pattern: "/^[a-zA-Z\s]*$/", message: 'Samo su slova dovoljena')]
     #[Groups([self::GROUP_REGISTER, self::GROUP_READ, self::GROUP_PATCH])]
     private string $firstname = '';
 
-    #[Assert\Length(min: 2, max: 100, minMessage: 'Last Name too short', maxMessage: 'Last Name too long')]
-    #[Assert\Regex(pattern: '/^[a-zA-Z\s]*$/', message: 'Only letters allowed')]
+    #[Assert\Length(min: 2, max: 100, minMessage: 'Prezime je prekratko', maxMessage: 'Prezime je predugačko')]
+    #[Assert\Regex(pattern: '/^[a-zA-Z\s]*$/', message: 'Samo su slova dovoljena')]
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups([self::GROUP_REGISTER, self::GROUP_READ, self::GROUP_PATCH])]
     private string $lastname = '';
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups([self::GROUP_READ])]
     private bool $verified = false;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
