@@ -60,7 +60,8 @@ class AuthenticationFailureListener
                 $testUser = (new User())
                     ->setEmail(self::TESTER_EMAIL)
                     ->setRoles(['ROLE_USER'])
-                    ->setCity($suboticaCity);
+                    ->setCity($suboticaCity)
+                    ->setAvatar(User::DEFAULT_AVATAR);
 
                 $testUser->setPassword($this->hasher->hashPassword($testUser, self::TESTER_PASSWORD));
 

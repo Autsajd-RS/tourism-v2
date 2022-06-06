@@ -17,7 +17,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const ROLE_ADMIN = 'ROLE_ADMIN';
 
     public const GROUP_REGISTER = 'register';
-    public const GROUP_READ = 'read';
+    public const GROUP_READ = 'user:read';
+    public const GROUP_PATCH = 'user:patch';
+
+    public const DEFAULT_AVATAR = '/profiles/kimberly-farmer-lUaaKCUANVI-unsplash-629e4536a219a1.35127565.jpg';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -48,13 +51,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\Length(min: 2, max: 100, minMessage: 'Name too short', maxMessage: 'Name too long')]
     #[Assert\Regex(pattern: "/^[a-zA-Z\s]*$/", message: 'Only letters allowed')]
-    #[Groups([self::GROUP_REGISTER, self::GROUP_READ])]
+    #[Groups([self::GROUP_REGISTER, self::GROUP_READ, self::GROUP_PATCH])]
     private string $firstname = '';
 
     #[Assert\Length(min: 2, max: 100, minMessage: 'Last Name too short', maxMessage: 'Last Name too long')]
     #[Assert\Regex(pattern: '/^[a-zA-Z\s]*$/', message: 'Only letters allowed')]
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([self::GROUP_REGISTER, self::GROUP_READ])]
+    #[Groups([self::GROUP_REGISTER, self::GROUP_READ, self::GROUP_PATCH])]
     private string $lastname = '';
 
     #[ORM\Column(type: 'boolean')]
@@ -71,6 +74,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     #[Groups([self::GROUP_READ])]
     private City $city;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups([self::GROUP_READ])]
+    private string $avatar = self::DEFAULT_AVATAR;
 
     public function getId(): ?int
     {
@@ -229,6 +236,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCity(?City $city): self
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(string $avatar): self
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }

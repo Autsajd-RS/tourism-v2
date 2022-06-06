@@ -12,3 +12,6 @@ api_login_check:
 api_refresh_token:
     path:       /api/token/refresh
     controller: gesdinet.jwtrefreshtoken::refresh
+
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.yaml"

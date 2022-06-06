@@ -13,11 +13,13 @@ framework:
                     multiplier: 2
                     max_delay: 0
             # failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            sync: 'sync://'
 
         routing:
             # Route your messages to the transports
             'App\Message\UserRegistered': async
+            'App\Message\ImageUploaded': async
+            'App\Message\ImageDeleted': async
 
 # when@test:
 #    framework:

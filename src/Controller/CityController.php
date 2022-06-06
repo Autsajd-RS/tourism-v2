@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class CityController extends AbstractController
+class CityController extends BaseController
 {
     private CityRepository $cityRepository;
 
@@ -27,8 +27,6 @@ class CityController extends AbstractController
     {
         $cities = $this->cityRepository->findAll();
 
-        return $this->json($cities, Response::HTTP_OK, [], [
-            'groups' => City::SERIALIZER_GROUP_CITY_LIST
-        ]);
+        return $this->jsonCityRead($cities);
     }
 }

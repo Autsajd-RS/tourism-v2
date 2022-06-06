@@ -101,7 +101,8 @@ class AuthenticationService
         $user
             ->setVerificationToken(self::verificationCode())
             ->setVerificationTokenExpire((new \DateTime('now'))->modify('+5 minutes'))
-            ->setRoles([User::ROLE_USER]);
+            ->setRoles([User::ROLE_USER])
+            ->setAvatar(User::DEFAULT_AVATAR);
 
         $user->setPassword($this->hasher->hashPassword($user, $user->getPlainPassword()));
 

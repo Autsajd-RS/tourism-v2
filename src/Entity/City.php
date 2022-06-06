@@ -20,27 +20,31 @@ class City
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ])]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ, Destination::GROUP_READ])]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ])]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ, Destination::GROUP_READ])]
     private string $name;
 
     #[ORM\Column(type: 'float')]
-    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ])]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ, Destination::GROUP_READ])]
     private float $lat;
 
     #[ORM\Column(type: 'float')]
-    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ])]
+    #[Groups([self::SERIALIZER_GROUP_CITY_LIST, User::GROUP_READ, Destination::GROUP_READ])]
     private float $lng;
 
     #[ORM\OneToMany(mappedBy: 'city', targetEntity: User::class)]
     private ArrayCollection|PersistentCollection $users;
 
+    #[ORM\OneToMany(mappedBy: 'city', targetEntity: Destination::class, orphanRemoval: true)]
+    private ArrayCollection|PersistentCollection $destinations;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->destinations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -108,6 +112,36 @@ class City
             // set the owning side to null (unless already changed)
             if ($user->getCity() === $this) {
                 $user->setCity(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Destination>
+     */
+    public function getDestinations(): Collection
+    {
+        return $this->destinations;
+    }
+
+    public function addDestination(Destination $destination): self
+    {
+        if (!$this->destinations->contains($destination)) {
+            $this->destinations[] = $destination;
+            $destination->setCity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDestination(Destination $destination): self
+    {
+        if ($this->destinations->removeElement($destination)) {
+            // set the owning side to null (unless already changed)
+            if ($destination->getCity() === $this) {
+                $destination->setCity(null);
             }
         }
 

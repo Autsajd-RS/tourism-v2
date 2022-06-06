@@ -1,8 +1,10 @@
 FROM php:8.1.3-fpm-alpine3.15
 
-RUN apk add imap-dev yarn openldap-dev krb5-dev zlib-dev wget git fcgi libpng-dev libmemcached-dev sudo libzip-dev icu-dev rabbitmq-c-dev \
+RUN apk add imap-dev yarn openldap-dev krb5-dev zlib-dev wget git fcgi libpng-dev freetype-dev libjpeg-turbo-dev libmemcached-dev sudo libzip-dev icu-dev rabbitmq-c-dev \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-configure intl \
+    && docker-php-ext-configure \
+           gd --enable-gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql pdo imap zip ldap mysqli bcmath opcache gd sockets intl \
     && apk add autoconf \
         g++ \
