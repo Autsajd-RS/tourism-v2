@@ -58,7 +58,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $lastname = '';
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups([self::GROUP_READ])]
     private bool $verified = false;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
