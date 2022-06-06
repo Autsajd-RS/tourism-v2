@@ -21,7 +21,7 @@ class UserProfileController extends BaseController
     {
     }
 
-    #[Route(path: '/api/profile', methods: ['GET'])]
+    #[Route(path: '/api/profiles', methods: ['GET'])]
     public function profile(): JsonResponse
     {
         /** @var User $user */
@@ -30,7 +30,7 @@ class UserProfileController extends BaseController
         return $this->jsonUserRead($user);
     }
 
-    #[Route(path: '/api/profile', methods: ['PATCH'])]
+    #[Route(path: '/api/profiles', methods: ['PATCH'])]
     public function edit(Request $request): JsonResponse
     {
         $user = $this->profileService->patch(request: $request);
@@ -42,7 +42,7 @@ class UserProfileController extends BaseController
         return $this->jsonUserRead($user, Response::HTTP_ACCEPTED);
     }
 
-    #[Route(path: '/api/profile/photo', methods: ['POST'])]
+    #[Route(path: '/api/profiles/photo', methods: ['POST'])]
     public function uploadPhoto(Request $request, #[CurrentUser] User $user): JsonResponse
     {
         if (!$request->files->has('profilePhoto')) {

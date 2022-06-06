@@ -57,4 +57,6 @@ class DestinationImagesController extends  BaseController
 
         return $this->jsonDestinationRead(destination: $destination, status: Response::HTTP_ACCEPTED);
     }
+
+    //TODO add multiple image upload - or not ?
 }
