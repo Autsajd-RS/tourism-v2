@@ -20,7 +20,7 @@ class CategoryController extends BaseController
     #[Route(path: '/api/categories', methods: ['GET'])]
     public function list(): JsonResponse
     {
-        return $this->jsonCityRead($this->categoryService->list());
+        return $this->jsonCategoryRead($this->categoryService->list());
     }
 
     #[Route(path: '/admin/categories', methods: ['POST'])]
