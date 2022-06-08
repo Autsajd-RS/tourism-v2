@@ -17,7 +17,7 @@ class DestinationController extends BaseController
     {
     }
 
-    #[Route(path: '/destinations', methods: ['GET'])]
+    #[Route(path: '/api/destinations', methods: ['GET'])]
     public function list(): JsonResponse
     {
         return $this->jsonDestinationRead($this->destinationService->list());
