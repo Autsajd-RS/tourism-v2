@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\City;
 use App\Entity\Destination;
+use App\Entity\DestinationComment;
 use App\Entity\User;
+use App\Entity\WishList;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,5 +52,25 @@ class BaseController extends AbstractController
     protected function jsonDestinationRead(Destination|array $destination, int $status = 200): JsonResponse
     {
         return $this->json($destination, $status, [], ['groups' => Destination::GROUP_READ]);
+    }
+
+    /**
+     * @param DestinationComment|array $comment
+     * @param int $status
+     * @return JsonResponse
+     */
+    protected function jsonCommentRead(DestinationComment|array $comment, int $status = 200): JsonResponse
+    {
+        return $this->json($comment, $status, [], ['groups' => DestinationComment::GROUP_READ]);
+    }
+
+    /**
+     * @param WishList|array $wishList
+     * @param int $status
+     * @return JsonResponse
+     */
+    protected function jsonListRead(WishList|array $wishList, int $status = 200): JsonResponse
+    {
+        return $this->json($wishList, $status, [], ['groups' => WishList::GROUP_READ]);
     }
 }

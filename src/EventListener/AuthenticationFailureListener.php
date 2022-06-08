@@ -4,6 +4,7 @@ namespace App\EventListener;
 
 use App\Entity\City;
 use App\Entity\User;
+use App\Security\UserChecker;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationFailureEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Response\JWTAuthenticationFailureResponse;
@@ -43,6 +44,11 @@ class AuthenticationFailureListener
         }
 
         $response = new JWTAuthenticationFailureResponse('Invalid credentials', 401);
+
+        if ($event->getException()->getMessage() === UserChecker::USER_NOT_VERIFIED) {
+            $response = new JWTAuthenticationFailureResponse('User not verified', 401);
+        }
+
         $event->setResponse($response);
     }
 
@@ -61,6 +67,7 @@ class AuthenticationFailureListener
                     ->setEmail(self::TESTER_EMAIL)
                     ->setRoles(['ROLE_USER'])
                     ->setCity($suboticaCity)
+                    ->setVerified(true)
                     ->setAvatar(User::DEFAULT_AVATAR);
 
                 $testUser->setPassword($this->hasher->hashPassword($testUser, self::TESTER_PASSWORD));

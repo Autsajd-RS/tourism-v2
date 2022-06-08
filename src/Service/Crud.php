@@ -5,6 +5,8 @@ namespace App\Service;
 use App\DTO\ErrorResponse;
 use App\Entity\Category;
 use App\Entity\City;
+use App\Entity\Destination;
+use App\Entity\WishList;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
@@ -26,6 +28,11 @@ class Crud
         private DenormalizerInterface $denormalizer
     )
     {
+    }
+
+    public function getEntityManager(): EntityManagerInterface
+    {
+        return $this->entityManager;
     }
 
     /**
@@ -123,6 +130,48 @@ class Crud
         }
 
         return $category;
+    }
+
+    public function extractDestinationFromRequest(Request $request): ErrorResponse|Destination
+    {
+        try {
+            $params = json_decode((string)$request->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return new ErrorResponse(message: 'Server Error', errors: ['server' => $e->getMessage()]);
+        }
+
+        if (!isset($params->destination)) {
+            return new ErrorResponse(message: 'Request Error', errors: ['request' => 'bad request']);
+        }
+
+        $destination = $this->entityManager->getRepository(Destination::class)->find($params->destination);
+
+        if (!$destination) {
+            return new ErrorResponse(message: 'Request Error', errors: ['category' => 'not found']);
+        }
+
+        return $destination;
+    }
+
+    public function extractListFromRequest(Request $request): ErrorResponse|WishList
+    {
+        try {
+            $params = json_decode((string)$request->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return new ErrorResponse(message: 'Server Error', errors: ['server' => $e->getMessage()]);
+        }
+
+        if (!isset($params->list)) {
+            return new ErrorResponse(message: 'Request Error', errors: ['request' => 'bad request']);
+        }
+
+        $list = $this->entityManager->getRepository(WishList::class)->find($params->list);
+
+        if (!$list) {
+            return new ErrorResponse(message: 'Request Error', errors: ['list' => 'not found']);
+        }
+
+        return $list;
     }
 
     /**

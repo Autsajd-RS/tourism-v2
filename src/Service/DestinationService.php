@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\DTO\ErrorResponse;
 use App\Entity\Destination;
+use App\Entity\DestinationComment;
 use App\Repository\DestinationRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;

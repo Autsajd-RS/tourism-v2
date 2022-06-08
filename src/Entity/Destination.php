@@ -19,7 +19,7 @@ class Destination
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups([self::GROUP_READ])]
+    #[Groups([self::GROUP_READ, DestinationComment::GROUP_READ, WishList::GROUP_READ])]
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -70,9 +70,18 @@ class Destination
     #[Groups([self::GROUP_READ])]
     private ArrayCollection|PersistentCollection $additionalImages;
 
+    #[ORM\OneToMany(mappedBy: 'destination', targetEntity: DestinationComment::class, orphanRemoval: true)]
+    #[Groups([self::GROUP_READ])]
+    private ArrayCollection|PersistentCollection $comments;
+
+    #[ORM\ManyToMany(targetEntity: WishList::class, mappedBy: 'destinations')]
+    private ArrayCollection|PersistentCollection $wishLists;
+
     public function __construct()
     {
         $this->additionalImages = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->wishLists = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -213,6 +222,63 @@ class Destination
             if ($additionalImage->getDestination() === $this) {
                 $additionalImage->setDestination(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DestinationComment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(DestinationComment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setDestination($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(DestinationComment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getDestination() === $this) {
+                $comment->setDestination(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, WishList>
+     */
+    public function getWishLists(): Collection
+    {
+        return $this->wishLists;
+    }
+
+    public function addWishList(WishList $wishList): self
+    {
+        if (!$this->wishLists->contains($wishList)) {
+            $this->wishLists[] = $wishList;
+            $wishList->addDestination($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWishList(WishList $wishList): self
+    {
+        if ($this->wishLists->removeElement($wishList)) {
+            $wishList->removeDestination($this);
         }
 
         return $this;

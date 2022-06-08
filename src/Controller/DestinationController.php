@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\DTO\ErrorResponse;
+use App\Entity\Destination;
 use App\Service\DestinationService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,22 @@ class DestinationController extends BaseController
     {
     }
 
-    #[Route(path: '/destinations', methods: ['GET'])]
+    #[Route(path: '/api/destinations/{id}', methods: ['GET'])]
+    public function one(int $id): JsonResponse
+    {
+        $destination = $this->destinationService->findById(id: $id);
+
+        if (!$destination) {
+            return $this->json(new ErrorResponse(
+                message: 'Fetch failed',
+                errors: ['destination', 'not found']
+            ));
+        }
+
+        return $this->jsonDestinationRead(destination: $destination);
+    }
+
+    #[Route(path: '/api/destinations', methods: ['GET'])]
     public function list(): JsonResponse
     {
         return $this->jsonDestinationRead($this->destinationService->list());
