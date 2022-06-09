@@ -74,4 +74,16 @@ class DestinationController extends BaseController
 
         return $this->jsonDestinationRead($destination, Response::HTTP_ACCEPTED);
     }
+
+    #[Route(path: '/destinations/radius', methods: ['POST'])]
+    public function destinationsInRadius(Request $request): JsonResponse
+    {
+        $result = $this->destinationService->findByCoordinates(request: $request);
+
+        if ($result instanceof ErrorResponse) {
+            return $this->json($result, Response::HTTP_CONFLICT);
+        }
+
+        return $this->json(array_values($result));
+    }
 }

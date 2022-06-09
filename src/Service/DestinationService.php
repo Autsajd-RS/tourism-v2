@@ -6,6 +6,7 @@ use App\DTO\ErrorResponse;
 use App\Entity\Destination;
 use App\Entity\DestinationComment;
 use App\Repository\DestinationRepository;
+use Doctrine\DBAL\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
@@ -118,5 +119,44 @@ class DestinationService
         } catch (ExceptionInterface|\JsonException $e) {
             return new ErrorResponse(message: 'Update failed', errors: ['server' => $e->getMessage()]);
         }
+    }
+
+    public function findByCoordinates(Request $request): ErrorResponse|array
+    {
+        try {
+            $params = json_decode((string)$request->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return new ErrorResponse(message: 'Request resolve error', errors: ['request' => 'could not decode request']);
+        }
+
+        if (!isset($params->latitude, $params->longitude)) {
+            return new ErrorResponse(message: 'Request error', errors: ['request' => 'bad request']);
+        }
+
+
+        $sql = 'SELECT id, name, latitude, longitude FROM destination';
+
+        try {
+            $result = $this->crud->getEntityManager()->getConnection()->fetchAllAssociative($sql);
+        } catch (Exception $e) {
+            return new ErrorResponse(message: 'Fetch destinations error', errors: ['destinations' => 'fetch error']);
+        }
+
+        $meter = 1000;
+        $R = 6371e3;
+        $lng = $params->longitude;
+        $lat = $params->latitude;
+
+        return array_filter($result,static function ($destination) use ($meter, $R, $lng, $lat) {
+            $f1 = $lat * (M_PI /180);
+            $f2 = $lng * (M_PI /180);
+            $deltaF = ((float)$destination['latitude'] - $lat) * M_PI / 180;
+            $deltaX = ((float)$destination['longitude'] - $lng) * M_PI / 180;
+            $a = sin($deltaF/2) ** 2 + cos($f1) * cos($f2) * sin($deltaX/2) ** 2;
+            $c = 2 * (atan2(sqrt($a), sqrt(1-$a)));
+
+            $d = $R * $c;
+            return $meter >= $d;
+        });
     }
 }

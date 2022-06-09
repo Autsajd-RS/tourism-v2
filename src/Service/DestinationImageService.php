@@ -29,7 +29,12 @@ class DestinationImageService
 
         $image = $request->files->get('destinationPrimaryPhoto');
 
-        $filename = $this->digitalOceanSpacesService->upload(
+        /*$filename = $this->digitalOceanSpacesService->upload(
+            uploadedFile: $image,
+            fileType: DigitalOceanSpacesService::DESTINATION_IMAGE_TYPE
+        );*/
+
+        $filename = $this->digitalOceanSpacesService->syncUpload(
             uploadedFile: $image,
             fileType: DigitalOceanSpacesService::DESTINATION_IMAGE_TYPE
         );
@@ -63,10 +68,6 @@ class DestinationImageService
         $image = $this->entityManager->getRepository(DestinationImage::class)->find($imageId);
 
         if (!$image) {
-            return;
-        }
-
-        if ($image->isMain()) {
             return;
         }
 

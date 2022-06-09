@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Message\ImageDeleted;
 use App\Message\ImageUploaded;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -18,7 +20,8 @@ class DigitalOceanSpacesService
     public function __construct(
         private ImageOptimizer $imageOptimizer,
         private FileUploader $fileUploader,
-        private MessageBusInterface $messageBus
+        private MessageBusInterface $messageBus,
+        private FilesystemOperator $cdnStorage
     )
     {
     }
@@ -26,15 +29,44 @@ class DigitalOceanSpacesService
     public function upload(UploadedFile $uploadedFile, string $fileType): ?string
     {
         $locationPrefix = $this->getLocationPrefix(fileType: $fileType);
+        $imageType = $this->getImageType(fileType: $fileType);
 
-        if (!$locationPrefix) {
+        if (!$locationPrefix || !$imageType) {
             return null;
         }
 
         $filename = $this->fileUploader->upload(file: $uploadedFile);
-        $this->imageOptimizer->resizeProfileImage($filename);
+        $this->imageOptimizer->resizeImage(filename: $filename, imageType: $imageType);
 
         $this->messageBus->dispatch(new ImageUploaded(filename: $filename, locationPrefix: $locationPrefix));
+
+        return str_replace($this->fileUploader->getTargetDirectory() . '/', '', $filename);
+    }
+
+    public function syncUpload(UploadedFile $uploadedFile, string $fileType): ?string
+    {
+        $locationPrefix = $this->getLocationPrefix(fileType: $fileType);
+        $imageType = $this->getImageType(fileType: $fileType);
+
+        if (!$locationPrefix || !$imageType) {
+            return null;
+        }
+
+        $filename = $this->fileUploader->upload(file: $uploadedFile);
+        $this->imageOptimizer->resizeImage(filename: $filename, imageType: $imageType);
+
+        try {
+            $this->cdnStorage->write(
+                location: $locationPrefix . str_replace($this->fileUploader->getTargetDirectory() . '/', '', $filename),
+                contents: file_get_contents($filename),
+                config: ['visibility' => 'public']
+            );
+
+            $this->fileUploader->remove($filename);
+
+        } catch (FilesystemException) {
+            return null;
+        }
 
         return str_replace($this->fileUploader->getTargetDirectory() . '/', '', $filename);
     }
@@ -66,5 +98,23 @@ class DigitalOceanSpacesService
         }
 
         return $locationPrefix;
+    }
+
+    private function getImageType(string $fileType): ?string
+    {
+        $imageType = null;
+        if ($fileType === self::PROFILE_IMAGE_TYPE) {
+            $imageType = self::PROFILE_IMAGE_TYPE;
+        }
+
+        if ($fileType === self::DESTINATION_IMAGE_TYPE) {
+            $imageType = self::DESTINATION_IMAGE_TYPE;
+        }
+
+        if (!$imageType) {
+            return null;
+        }
+
+        return $imageType;
     }
 }
