@@ -4,10 +4,13 @@ namespace App\Service;
 
 use App\DTO\ErrorResponse;
 use App\Entity\Destination;
-use App\Entity\DestinationComment;
+use App\Entity\DestinationLike;
+use App\Entity\User;
+use App\Repository\DestinationLikeRepository;
 use App\Repository\DestinationRepository;
 use Doctrine\DBAL\Exception;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class DestinationService
@@ -15,6 +18,8 @@ class DestinationService
     public function __construct(
         private DestinationRepository $destinationRepository,
         private Crud $crud,
+        private DestinationLikeRepository $likeRepository,
+        private Security $security
     )
     {
     }
@@ -36,7 +41,7 @@ class DestinationService
      * @param Request $request
      * @return ErrorResponse|Destination[]
      */
-    public function listByCategoryOrCity(Request $request): ErrorResponse|array
+    public function listByCriteria(Request $request): ErrorResponse|array
     {
         try {
             $params = json_decode((string)$request->getContent(), false, 512, JSON_THROW_ON_ERROR);
@@ -44,10 +49,27 @@ class DestinationService
             return new ErrorResponse(message: 'List failed', errors: ['server' => $e->getMessage()]);
         }
 
-        $cityId = $params->cityId ?? null;
-        $categoryId = $params->categoryId ?? null;
+        $criteria = [];
+        $criteria['cityId'] = $params->cityId ?? null;
+        $criteria['categoryId'] = $params->categoryId ?? null;
+        $criteria['name'] = $params->name ?? null;
+        $criteria['popularity'] = $params->popularity ?? null;
+        $criteria['attendance'] = $params->attendance ?? null;
+        $criteria['limit'] = $params->limit ?? null;
+        $criteria['nearMe'] = $params->nearMe ?? null;
 
-        return $this->destinationRepository->searchByCityAndCategory(cityId: $cityId, categoryId: $categoryId);
+        if ($criteria['nearMe'] === true) {
+            /** @var User $user */
+            $user = $this->security->getUser();
+
+            if ($user && $user->getCity()) {
+                $criteria['cityId'] = $user->getCity()->getId();
+            }
+        }
+
+        unset($criteria['nearMe']);
+
+        return $this->destinationRepository->searchByCriteria(criteria: $criteria);
     }
 
     public function create(Request $request): ErrorResponse|Destination
@@ -158,5 +180,47 @@ class DestinationService
             $d = $R * $c;
             return $meter >= $d;
         });
+    }
+
+    public function addLike(Destination $destination, User $user): ErrorResponse|DestinationLike
+    {
+        if ($this->likeRepository->isLikedByUser(destination: $destination, user: $user)) {
+            return new ErrorResponse(message: 'Like failed', errors: ['destination' => 'already liked by user']);
+        }
+
+        $destination->setPopularity($destination->getPopularity() + 1);
+        $this->crud->patch(entity: $destination);
+
+        $like = (new DestinationLike())
+            ->setDestinationId($destination->getId())
+            ->setUserId($user->getId())
+            ->setCreatedAt(new \DateTime())
+            ->setDeleted(false);
+
+        $this->crud->create(entity: $like);
+
+        return $like;
+    }
+
+    public function undoLike(Destination $destination, User $user): DestinationLike
+    {
+        /** @var DestinationLike $lastLike */
+        $lastLike = $this->likeRepository->lastLike(destination: $destination, user: $user);
+
+        if (!$lastLike->isDeleted()) {
+            $lastLike->setDeleted(true);
+            $destination->setPopularity($destination->getPopularity() - 1);
+
+            $this->crud->patch(entity: $lastLike);
+            $this->crud->patch(entity: $destination);
+        }
+
+        return $lastLike;
+    }
+
+    public function incrementAttendance(Destination $destination): void
+    {
+        $destination->setAttendance($destination->getAttendance() + 1);
+        $this->crud->patch(entity: $destination);
     }
 }

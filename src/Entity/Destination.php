@@ -77,6 +77,14 @@ class Destination
     #[ORM\ManyToMany(targetEntity: WishList::class, mappedBy: 'destinations')]
     private ArrayCollection|PersistentCollection $wishLists;
 
+    //virtual property
+    #[Groups([self::GROUP_READ])]
+    private bool $likedByMe = false;
+
+    //virtual property
+    #[Groups([self::GROUP_READ])]
+    private bool $nearMe = false;
+
     public function __construct()
     {
         $this->additionalImages = new ArrayCollection();
@@ -280,6 +288,30 @@ class Destination
         if ($this->wishLists->removeElement($wishList)) {
             $wishList->removeDestination($this);
         }
+
+        return $this;
+    }
+
+    public function isLikedByMe(): bool
+    {
+        return $this->likedByMe;
+    }
+
+    public function setLikedByMe(bool $likedByMe): self
+    {
+        $this->likedByMe = $likedByMe;
+
+        return $this;
+    }
+
+    public function isNearMe(): bool
+    {
+        return $this->nearMe;
+    }
+
+    public function setNearMe(bool $nearMe): self
+    {
+        $this->nearMe = $nearMe;
 
         return $this;
     }

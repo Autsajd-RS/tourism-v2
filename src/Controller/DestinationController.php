@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\DTO\ErrorResponse;
 use App\Entity\Destination;
+use App\Entity\User;
 use App\Service\DestinationService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class DestinationController extends BaseController
 {
@@ -30,6 +32,8 @@ class DestinationController extends BaseController
             ));
         }
 
+        $this->destinationService->incrementAttendance(destination: $destination);
+
         return $this->jsonDestinationRead(destination: $destination);
     }
 
@@ -39,10 +43,10 @@ class DestinationController extends BaseController
         return $this->jsonDestinationRead($this->destinationService->list());
     }
 
-    #[Route(path: '/destinations/by', methods: ['POST'])]
+    #[Route(path: '/api/destinations/by', methods: ['POST'])]
     public function listBy(Request $request): JsonResponse
     {
-        $response = $this->destinationService->listByCategoryOrCity($request);
+        $response = $this->destinationService->listByCriteria(request: $request);
 
         if ($response instanceof ErrorResponse) {
             return $this->json($response, Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -85,5 +89,47 @@ class DestinationController extends BaseController
         }
 
         return $this->json(array_values($result));
+    }
+
+    #[Route(path: '/api/destinations/{id}/like', methods: ['GET'])]
+    public function likeDestination(int $id, #[CurrentUser] User $user): JsonResponse
+    {
+        $destination = $this->destinationService->findById(id: $id);
+
+        if (!$destination) {
+            return $this->json(new ErrorResponse(
+                message: 'Fetch failed',
+                errors: ['destination', 'not found']
+            ));
+        }
+
+        $like = $this->destinationService->addLike(destination: $destination, user: $user);
+
+        if ($like instanceof ErrorResponse) {
+            return $this->json($like, Response::HTTP_CONFLICT);
+        }
+
+        return $this->json($like, Response::HTTP_CREATED);
+    }
+
+    #[Route(path: '/api/destinations/{id}/unlike', methods: ['GET'])]
+    public function unlikeDestination(int $id, #[CurrentUser] User $user): JsonResponse
+    {
+        $destination = $this->destinationService->findById(id: $id);
+
+        if (!$destination) {
+            return $this->json(new ErrorResponse(
+                message: 'Fetch failed',
+                errors: ['destination', 'not found']
+            ));
+        }
+
+        return $this->json(
+            data: $this->destinationService->undoLike(
+                destination: $destination,
+                user: $user
+            ),
+            status: Response::HTTP_OK
+        );
     }
 }

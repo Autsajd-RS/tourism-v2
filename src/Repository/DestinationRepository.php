@@ -54,19 +54,49 @@ class DestinationRepository extends ServiceEntityRepository
     /**
      * @return Destination[]
      */
-    public function searchByCityAndCategory(?int $cityId = null, ?int $categoryId = null): array
+    public function searchByCriteria(array $criteria): array
     {
         $builder = $this->createQueryBuilder('d');
 
-        if ($cityId !== null) {
-            $builder->andWhere('d.city = :cityId')->setParameter('cityId', $cityId);
+        if ($criteria['cityId'] !== null) {
+            if (is_array($criteria['cityId'])) {
+                $builder->andWhere('d.city IN (:cityId)')->setParameter('cityId', $criteria['cityId']);
+            } else {
+                $builder->andWhere('d.city = :cityId')->setParameter('cityId', $criteria['cityId']);
+            }
         }
 
-        if ($categoryId !== null) {
-            $builder->andWhere('d.category = :categoryId')->setParameter('categoryId', $categoryId);
+        if ($criteria['categoryId'] !== null) {
+            if (is_array($criteria['categoryId'])) {
+                $builder->andWhere('d.category IN (:categoryId)')->setParameter('categoryId', $criteria['categoryId']);
+            } else {
+                $builder->andWhere('d.category = :categoryId')->setParameter('categoryId', $criteria['categoryId']);
+            }
         }
 
-        if (!$categoryId && !$cityId) {
+        if ($criteria['name'] !== null) {
+            $builder->andWhere('d.name LIKE :name')->setParameter('name', '%' . $criteria['name'] . '%');
+        }
+
+        if (in_array($criteria['popularity'], ['ASC', 'DESC'], true)) {
+            $builder->addOrderBy('d.popularity', $criteria['popularity']);
+        }
+
+        if (in_array($criteria['attendance'], ['ASC', 'DESC'], true)) {
+            $builder->addOrderBy('d.attendance', $criteria['attendance']);
+        }
+
+        if ($criteria['limit'] !== null) {
+            $builder->setMaxResults($criteria['limit']);
+        }
+
+        if (
+            !$criteria['categoryId'] &&
+            !$criteria['cityId'] &&
+            !$criteria['name'] &&
+            !$criteria['popularity'] &&
+            !$criteria['attendance']
+        ) {
             return $this->list();
         }
 
