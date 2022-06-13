@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Destination;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use function Webmozart\Assert\Tests\StaticAnalysis\null;
 
@@ -51,8 +52,9 @@ class DestinationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+
     /**
-     * @return Destination[]
+     * @throws \Exception
      */
     public function searchByCriteria(array $criteria): array
     {
@@ -86,9 +88,18 @@ class DestinationRepository extends ServiceEntityRepository
             $builder->addOrderBy('d.attendance', $criteria['attendance']);
         }
 
-        if ($criteria['limit'] !== null) {
-            $builder->setMaxResults($criteria['limit']);
+        $limit = 10;
+        if ($criteria['limit'] && is_int($criteria['limit']) && $criteria['limit'] > 0) {
+            $limit = $criteria['limit'];
         }
+
+        $page = 1;
+        if ($criteria['page'] && is_int($criteria['page']) && $criteria['page'] > 0) {
+            $page = $criteria['page'];
+        }
+
+        $builder->setFirstResult(($page - 1) * $limit);
+        $builder->setMaxResults($limit);
 
         if (
             !$criteria['categoryId'] &&
@@ -100,6 +111,13 @@ class DestinationRepository extends ServiceEntityRepository
             return $this->list();
         }
 
-        return $builder->getQuery()->getResult();
+        $paginator = new Paginator($builder->getQuery());
+
+        $result['total'] = $paginator->count();
+        $result['page'] = $page;
+        $result['membersPerPage'] = $limit;
+        $result['members'] = $paginator->getIterator()->getArrayCopy();
+
+        return $result;
     }
 }

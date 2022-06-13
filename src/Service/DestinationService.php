@@ -40,6 +40,7 @@ class DestinationService
     /**
      * @param Request $request
      * @return ErrorResponse|Destination[]
+     * @throws \Exception
      */
     public function listByCriteria(Request $request): ErrorResponse|array
     {
@@ -56,6 +57,7 @@ class DestinationService
         $criteria['popularity'] = $params->popularity ?? null;
         $criteria['attendance'] = $params->attendance ?? null;
         $criteria['limit'] = $params->limit ?? null;
+        $criteria['page'] = $params->page ?? null;
         $criteria['nearMe'] = $params->nearMe ?? null;
 
         if ($criteria['nearMe'] === true) {

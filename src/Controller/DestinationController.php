@@ -43,6 +43,9 @@ class DestinationController extends BaseController
         return $this->jsonDestinationRead($this->destinationService->list());
     }
 
+    /**
+     * @throws \Exception
+     */
     #[Route(path: '/api/destinations/by', methods: ['POST'])]
     public function listBy(Request $request): JsonResponse
     {
@@ -52,7 +55,7 @@ class DestinationController extends BaseController
             return $this->json($response, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $this->jsonDestinationRead($response);
+        return $this->json($response);
     }
 
     #[Route(path: '/admin/destinations', methods: ['POST'])]
