@@ -113,10 +113,10 @@ class DestinationRepository extends ServiceEntityRepository
 
         $paginator = new Paginator($builder->getQuery());
 
-        $result['total'] = $paginator->count();
+        $result['totalResults'] = $paginator->count();
         $result['page'] = $page;
-        $result['membersPerPage'] = $limit;
-        $result['members'] = $paginator->getIterator()->getArrayCopy();
+        $result['pagesCount'] = ceil($result['totalResults'] / $limit);
+        $result['items'] = $paginator->getIterator()->getArrayCopy();
 
         return $result;
     }
