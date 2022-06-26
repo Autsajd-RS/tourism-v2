@@ -79,7 +79,11 @@ class Destination
 
     //virtual property
     #[Groups([self::GROUP_READ])]
-    private bool $likedByMe = false;
+    private bool|null $likedByMe = null;
+
+    //virtual property
+    #[Groups([self::GROUP_READ])]
+    private bool|null $dislikedByMe = null;
 
     //virtual property
     #[Groups([self::GROUP_READ])]
@@ -292,12 +296,12 @@ class Destination
         return $this;
     }
 
-    public function isLikedByMe(): bool
+    public function isLikedByMe(): ?bool
     {
         return $this->likedByMe;
     }
 
-    public function setLikedByMe(bool $likedByMe): self
+    public function setLikedByMe(?bool $likedByMe): self
     {
         $this->likedByMe = $likedByMe;
 
@@ -315,4 +319,17 @@ class Destination
 
         return $this;
     }
+
+    public function isDislikedByMe(): ?bool
+    {
+        return $this->dislikedByMe;
+    }
+
+    public function setDislikedByMe(?bool $dislikedByMe): self
+    {
+        $this->dislikedByMe = $dislikedByMe;
+
+        return $this;
+    }
+
 }

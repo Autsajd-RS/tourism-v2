@@ -26,6 +26,9 @@ class DestinationLike
     #[ORM\Column(type: 'boolean')]
     private bool $deleted = false;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $negative = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +78,18 @@ class DestinationLike
     public function setDeleted(bool $deleted): self
     {
         $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    public function isNegative(): ?bool
+    {
+        return $this->negative;
+    }
+
+    public function setNegative(bool $negative): self
+    {
+        $this->negative = $negative;
 
         return $this;
     }

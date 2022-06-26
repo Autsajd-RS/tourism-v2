@@ -108,10 +108,6 @@ class DestinationController extends BaseController
 
         $like = $this->destinationService->addLike(destination: $destination, user: $user);
 
-        if ($like instanceof ErrorResponse) {
-            return $this->json($like, Response::HTTP_CONFLICT);
-        }
-
         return $this->json($like, Response::HTTP_CREATED);
     }
 

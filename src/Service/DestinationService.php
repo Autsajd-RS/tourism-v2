@@ -184,10 +184,17 @@ class DestinationService
         });
     }
 
-    public function addLike(Destination $destination, User $user): ErrorResponse|DestinationLike
+    public function addLike(Destination $destination, User $user): DestinationLike
     {
-        if ($this->likeRepository->isLikedByUser(destination: $destination, user: $user)) {
-            return new ErrorResponse(message: 'Like failed', errors: ['destination' => 'already liked by user']);
+        /** @var DestinationLike[] $previousLike */
+        $previousLike = $this->likeRepository->isLikedByUser(destination: $destination, user: $user);
+        if (count($previousLike)) {
+            if ($previousLike[0]->isNegative()) {
+                $previousLike[0]->setDeleted(true);
+                $this->crud->patch(entity: $previousLike[0]);
+            } else {
+                return $previousLike[0];
+            }
         }
 
         $destination->setPopularity($destination->getPopularity() + 1);
@@ -197,7 +204,8 @@ class DestinationService
             ->setDestinationId($destination->getId())
             ->setUserId($user->getId())
             ->setCreatedAt(new \DateTime())
-            ->setDeleted(false);
+            ->setDeleted(false)
+            ->setNegative(false);
 
         $this->crud->create(entity: $like);
 
@@ -206,18 +214,32 @@ class DestinationService
 
     public function undoLike(Destination $destination, User $user): DestinationLike
     {
-        /** @var DestinationLike $lastLike */
-        $lastLike = $this->likeRepository->lastLike(destination: $destination, user: $user);
+        /** @var DestinationLike[] $previousLike */
+        $previousLike = $this->likeRepository->isLikedByUser(destination: $destination, user: $user);
 
-        if (!$lastLike->isDeleted()) {
-            $lastLike->setDeleted(true);
-            $destination->setPopularity($destination->getPopularity() - 1);
+        if (count($previousLike)) {
+            if ($previousLike[0]->isNegative()) {
+                return $previousLike[0];
+            }
 
-            $this->crud->patch(entity: $lastLike);
-            $this->crud->patch(entity: $destination);
+            $previousLike[0]->setDeleted(true);
+            $this->crud->patch(entity: $previousLike[0]);
+
         }
 
-        return $lastLike;
+        $like = (new DestinationLike())
+            ->setDestinationId($destination->getId())
+            ->setUserId($user->getId())
+            ->setCreatedAt(new \DateTime())
+            ->setDeleted(false)
+            ->setNegative(true);
+
+        $destination->setPopularity($destination->getPopularity() - 1);
+
+        $this->crud->create(entity: $like);
+        $this->crud->patch(entity: $destination);
+
+        return $like;
     }
 
     public function incrementAttendance(Destination $destination): void
