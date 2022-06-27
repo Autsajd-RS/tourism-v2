@@ -14,9 +14,19 @@ class ImageOptimizer
 
     private Imagine $imagine;
 
-    public function __construct()
+    public function __construct(
+        private string $publicDir
+    )
     {
         $this->imagine = new Imagine();
+    }
+
+    public function resizeImageLocal(string $filename, string $imageType): void
+    {
+        $this->resizeImage(
+            filename: $this->publicDir . $filename,
+            imageType: $imageType
+        );
     }
 
     public function resizeImage(string $filename, string $imageType): void
