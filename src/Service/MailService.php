@@ -29,7 +29,7 @@ class MailService
                 'json' => $mailDto->prepareSelf()
             ]);
         } catch (\JsonException|TransportExceptionInterface $e) {
-            $this->logger->error($e);
+            $this->logger->error('FAILED VERIFICATION EMAIL', ['e' => $e]);
         }
     }
 }

@@ -14,6 +14,7 @@ services:
             $baseUrl: '%env(BASE_URI)%'
             $frontendUrl: '%env(FRONTEND_URI)%'
             $tmpDirectory: "%env(TMP_DIRECTORY)%"
+            $publicDir: '%kernel.project_dir%/public/'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

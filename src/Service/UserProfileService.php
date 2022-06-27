@@ -65,9 +65,7 @@ class UserProfileService
 
     public function appendProfilePhoto(User $user, string $filename): void
     {
-        $user->setAvatar(
-            '/' . DigitalOceanSpacesService::PROFILES_BUCKET . '/' . $filename
-        );
+        $user->setAvatar($filename);
 
         $this->crud->patch($user);
     }

@@ -34,7 +34,12 @@ class DestinationImageService
             fileType: DigitalOceanSpacesService::DESTINATION_IMAGE_TYPE
         );*/
 
-        $filename = $this->digitalOceanSpacesService->syncUpload(
+        /*$filename = $this->digitalOceanSpacesService->syncUpload(
+            uploadedFile: $image,
+            fileType: DigitalOceanSpacesService::DESTINATION_IMAGE_TYPE
+        );*/
+
+        $filename = $this->digitalOceanSpacesService->localUpload(
             uploadedFile: $image,
             fileType: DigitalOceanSpacesService::DESTINATION_IMAGE_TYPE
         );
@@ -71,7 +76,8 @@ class DestinationImageService
             return;
         }
 
-        $this->digitalOceanSpacesService->delete(filename: $image->getName(), fileType: DigitalOceanSpacesService::DESTINATION_IMAGE_TYPE);
+        //$this->digitalOceanSpacesService->delete(filename: $image->getName(), fileType: DigitalOceanSpacesService::DESTINATION_IMAGE_TYPE);
+        $this->digitalOceanSpacesService->deleteLocal(filename: $image->getName());
 
         $this->crud->remove($image);
     }

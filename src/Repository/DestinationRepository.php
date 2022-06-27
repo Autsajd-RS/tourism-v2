@@ -101,7 +101,7 @@ class DestinationRepository extends ServiceEntityRepository
         $builder->setFirstResult(($page - 1) * $limit);
         $builder->setMaxResults($limit);
 
-        if (
+        /*if (
             !$criteria['categoryId'] &&
             !$criteria['cityId'] &&
             !$criteria['name'] &&
@@ -109,7 +109,7 @@ class DestinationRepository extends ServiceEntityRepository
             !$criteria['attendance']
         ) {
             return $this->list();
-        }
+        }*/
 
         $paginator = new Paginator($builder->getQuery());
 

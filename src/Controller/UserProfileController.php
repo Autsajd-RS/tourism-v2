@@ -54,7 +54,7 @@ class UserProfileController extends BaseController
 
         $photo = $request->files->get('profilePhoto');
 
-        $filename = $this->digitalOceanSpacesService->upload(
+        $filename = $this->digitalOceanSpacesService->localUpload(
             uploadedFile: $photo,
             fileType: DigitalOceanSpacesService::PROFILE_IMAGE_TYPE
         );

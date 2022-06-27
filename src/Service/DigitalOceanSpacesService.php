@@ -71,6 +71,26 @@ class DigitalOceanSpacesService
         return str_replace($this->fileUploader->getTargetDirectory() . '/', '', $filename);
     }
 
+    public function localUpload(UploadedFile $uploadedFile, string $fileType): ?string
+    {
+        $locationPrefix = $this->getLocationPrefix(fileType: $fileType);
+        $imageType = $this->getImageType(fileType: $fileType);
+
+        if (!$locationPrefix || !$imageType) {
+            return null;
+        }
+
+        $filename = $this->fileUploader->uploadPublic(file: $uploadedFile, location: $locationPrefix);
+        $this->imageOptimizer->resizeImageLocal(filename: $filename, imageType: $imageType);
+
+        return $filename;
+    }
+
+    public function deleteLocal(string $filename): void
+    {
+        $this->fileUploader->removeFromPublic($filename);
+    }
+
     public function delete(string $filename, string $fileType): void
     {
         $locationPrefix = $this->getLocationPrefix(fileType: $fileType);
@@ -86,11 +106,11 @@ class DigitalOceanSpacesService
     {
         $locationPrefix = null;
         if ($fileType === self::PROFILE_IMAGE_TYPE) {
-            $locationPrefix = '/' . self::PROFILES_BUCKET . '/';
+            $locationPrefix = self::PROFILES_BUCKET;
         }
 
         if ($fileType === self::DESTINATION_IMAGE_TYPE) {
-            $locationPrefix = '/' . self::DESTINATIONS_BUCKET . '/';
+            $locationPrefix = self::DESTINATIONS_BUCKET;
         }
 
         if (!$locationPrefix) {
