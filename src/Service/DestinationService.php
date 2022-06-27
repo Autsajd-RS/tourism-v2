@@ -54,8 +54,7 @@ class DestinationService
         $criteria['cityId'] = $params->cityId ?? null;
         $criteria['categoryId'] = $params->categoryId ?? null;
         $criteria['name'] = $params->name ?? null;
-        $criteria['popularity'] = $params->popularity ?? null;
-        $criteria['attendance'] = $params->attendance ?? null;
+        $criteria['sort'] = $params->sort ?? null;
         $criteria['limit'] = $params->limit ?? null;
         $criteria['page'] = $params->page ?? null;
         $criteria['nearMe'] = $params->nearMe ?? null;

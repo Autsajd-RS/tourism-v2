@@ -80,12 +80,16 @@ class DestinationRepository extends ServiceEntityRepository
             $builder->andWhere('d.name LIKE :name')->setParameter('name', '%' . $criteria['name'] . '%');
         }
 
-        if (in_array($criteria['popularity'], ['ASC', 'DESC'], true)) {
-            $builder->addOrderBy('d.popularity', $criteria['popularity']);
-        }
+        $builder->orderBy('d.id');
 
-        if (in_array($criteria['attendance'], ['ASC', 'DESC'], true)) {
-            $builder->addOrderBy('d.attendance', $criteria['attendance']);
+        if (in_array($criteria['sort'], ['popularity', 'attendance'], true)) {
+            if ($criteria['sort'] === 'popularity') {
+                $builder->orderBy('d.popularity', 'DESC');
+            }
+
+            if ($criteria['sort'] === 'attendance') {
+                $builder->orderBy('d.attendance', 'DESC');
+            }
         }
 
         $limit = 10;
@@ -101,15 +105,6 @@ class DestinationRepository extends ServiceEntityRepository
         $builder->setFirstResult(($page - 1) * $limit);
         $builder->setMaxResults($limit);
 
-        if (
-            !$criteria['categoryId'] &&
-            !$criteria['cityId'] &&
-            !$criteria['name'] &&
-            !$criteria['popularity'] &&
-            !$criteria['attendance']
-        ) {
-            return $this->list();
-        }
 
         $paginator = new Paginator($builder->getQuery());
 
