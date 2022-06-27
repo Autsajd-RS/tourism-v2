@@ -25,7 +25,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const GROUP_READ = 'user:read';
     public const GROUP_PATCH = 'user:patch';
 
-    public const DEFAULT_AVATAR = '/profiles/kimberly-farmer-lUaaKCUANVI-unsplash-629e4536a219a1.35127565.jpg';
+    public const DEFAULT_AVATAR = '/profiles/simone-secci-49uySSA678U-unsplash.jpg';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
