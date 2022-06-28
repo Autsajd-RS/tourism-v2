@@ -232,7 +232,7 @@ class DestinationService
 
         if (count($previousLike)) {
             $previousLike[0]->setDeleted(true);
-            $this->crud->patch(entity: $previousLike);
+            $this->crud->patch(entity: $previousLike[0]);
         }
 
         if (count($previousDislike)) {

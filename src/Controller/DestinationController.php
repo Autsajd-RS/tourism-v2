@@ -108,7 +108,7 @@ class DestinationController extends BaseController
 
         $like = $this->destinationService->addLike(destination: $destination, user: $user);
 
-        return $this->json($like, Response::HTTP_CREATED);
+        return $this->json($destination, Response::HTTP_CREATED);
     }
 
     #[Route(path: '/api/destinations/{id}/unlike', methods: ['GET'])]
@@ -123,13 +123,12 @@ class DestinationController extends BaseController
             ));
         }
 
-        return $this->json(
-            data: $this->destinationService->undoLike(
-                destination: $destination,
-                user: $user
-            ),
-            status: Response::HTTP_OK
+        $this->destinationService->undoLike(
+            destination: $destination,
+            user: $user
         );
+
+        return $this->jsonDestinationRead(destination: $destination, status: Response::HTTP_CREATED);
     }
 
     #[Route(path: '/api/destinations/{id}/likes-list')]
