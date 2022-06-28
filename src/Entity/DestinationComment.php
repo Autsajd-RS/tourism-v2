@@ -32,7 +32,6 @@ class DestinationComment
 
     #[ORM\ManyToOne(targetEntity: Destination::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([self::GROUP_READ])]
     #[Assert\NotBlank(message: 'Destinacija vezana za komentara ne sme biti prazna')]
     private Destination $destination;
 
