@@ -192,6 +192,8 @@ class DestinationService
                 $previousLike[0]->setDeleted(true);
                 $this->crud->patch(entity: $previousLike[0]);
             } else {
+                $previousLike[0]->setDeleted(true);
+                $this->crud->patch($previousLike[0]);
                 return $previousLike[0];
             }
         }
@@ -218,6 +220,8 @@ class DestinationService
 
         if (count($previousLike)) {
             if ($previousLike[0]->isNegative()) {
+                $previousLike[0]->setDeleted(true);
+                $this->crud->patch($previousLike[0]);
                 return $previousLike[0];
             }
 
