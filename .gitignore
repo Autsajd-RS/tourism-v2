@@ -24,3 +24,5 @@ docker-compose.override.yml
 ###> liip/imagine-bundle ###
 /public/media/cache/
 ###< liip/imagine-bundle ###
+
+/public/destinations/

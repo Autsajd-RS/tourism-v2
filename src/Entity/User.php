@@ -54,13 +54,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\Length(min: 2, max: 100, minMessage: 'Ime je prekratko', maxMessage: 'Ime je predugačko')]
     #[Assert\Regex(pattern: "/^[a-zA-Z\s]*$/", message: 'Samo su slova dovoljena')]
-    #[Groups([self::GROUP_REGISTER, self::GROUP_READ, self::GROUP_PATCH, Destination::GROUP_READ])]
+    #[Groups([self::GROUP_REGISTER, self::GROUP_READ, self::GROUP_PATCH, Destination::GROUP_READ, DestinationComment::GROUP_READ])]
     private string $firstname = '';
 
     #[Assert\Length(min: 2, max: 100, minMessage: 'Prezime je prekratko', maxMessage: 'Prezime je predugačko')]
     #[Assert\Regex(pattern: '/^[a-zA-Z\s]*$/', message: 'Samo su slova dovoljena')]
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([self::GROUP_REGISTER, self::GROUP_READ, self::GROUP_PATCH, Destination::GROUP_READ])]
+    #[Groups([self::GROUP_REGISTER, self::GROUP_READ, self::GROUP_PATCH, Destination::GROUP_READ, DestinationComment::GROUP_READ])]
     private string $lastname = '';
 
     #[ORM\Column(type: 'boolean')]
