@@ -131,4 +131,39 @@ class DestinationController extends BaseController
             status: Response::HTTP_OK
         );
     }
+
+    #[Route(path: '/api/destinations/{id}/likes-list')]
+    public function listOfLikes(int $id): JsonResponse
+    {
+        $destination = $this->destinationService->findById(id: $id);
+
+        if (!$destination) {
+            return $this->json(new ErrorResponse(
+                message: 'Fetch failed',
+                errors: ['destination', 'not found']
+            ));
+        }
+
+        return $this->json($this->destinationService->listOfLikesOrDislikes(
+            destination: $destination
+        ));
+    }
+
+    #[Route(path: '/api/destinations/{id}/dislikes-list')]
+    public function listOfDislikes(int $id): JsonResponse
+    {
+        $destination = $this->destinationService->findById(id: $id);
+
+        if (!$destination) {
+            return $this->json(new ErrorResponse(
+                message: 'Fetch failed',
+                errors: ['destination', 'not found']
+            ));
+        }
+
+        return $this->json($this->destinationService->listOfLikesOrDislikes(
+            destination: $destination,
+            likes: false
+        ));
+    }
 }

@@ -8,6 +8,7 @@ use App\Entity\DestinationLike;
 use App\Entity\User;
 use App\Repository\DestinationLikeRepository;
 use App\Repository\DestinationRepository;
+use App\Repository\UserRepository;
 use Doctrine\DBAL\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
@@ -19,7 +20,8 @@ class DestinationService
         private DestinationRepository $destinationRepository,
         private Crud $crud,
         private DestinationLikeRepository $likeRepository,
-        private Security $security
+        private Security $security,
+        private UserRepository $userRepository
     )
     {
     }
@@ -263,5 +265,27 @@ class DestinationService
     {
         $destination->setAttendance($destination->getAttendance() + 1);
         $this->crud->patch(entity: $destination);
+    }
+
+    public function listOfLikesOrDislikes(Destination $destination, bool $likes = true): array
+    {
+        /** @var DestinationLike[] $list */
+        $list = $this->likeRepository->findDestinationLikes(destination: $destination, likes: $likes);
+
+        $result = [];
+        foreach ($list as $like) {
+            $user = $this->userRepository->find(id: $like->getUserId());
+
+            if ($user) {
+                $result[] = [
+                    'firstname' => $user->getFirstname(),
+                    'lastname' => $user->getLastname(),
+                    'email' => $user->getEmail(),
+                    'avatar' => $user->getAvatar()
+                ];
+            }
+        }
+
+        return $result;
     }
 }

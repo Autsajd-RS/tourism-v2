@@ -81,12 +81,14 @@ class DestinationLikeRepository extends ServiceEntityRepository
             ->getResult()[0];
     }
 
-    public function findDestinationLikes(Destination $destination)
+    public function findDestinationLikes(Destination $destination, bool $likes = true)
     {
         return $this->createQueryBuilder('dl')
             ->where('dl.destinationId = :destinationId')
-            ->andWhere('dl.deleted != 0')
+            ->andWhere('dl.deleted = 0')
+            ->andWhere('dl.negative != :likes')
             ->setParameter('destinationId', $destination->getId())
+            ->setParameter('likes', $likes)
             ->getQuery()
             ->getResult();
     }
