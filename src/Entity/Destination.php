@@ -89,6 +89,14 @@ class Destination
     #[Groups([self::GROUP_READ])]
     private bool $nearMe = false;
 
+    //virtual property
+    #[Groups([self::GROUP_READ])]
+    private int $likesCount = 0;
+
+    //virtual property
+    #[Groups([self::GROUP_READ])]
+    private int $dislikesCount = 0;
+
     public function __construct()
     {
         $this->additionalImages = new ArrayCollection();
@@ -332,4 +340,41 @@ class Destination
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getLikesCount(): int
+    {
+        return $this->likesCount;
+    }
+
+    /**
+     * @param int $likesCount
+     * @return Destination
+     */
+    public function setLikesCount(int $likesCount): self
+    {
+        $this->likesCount = $likesCount;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDislikesCount(): int
+    {
+        return $this->dislikesCount;
+    }
+
+    /**
+     * @param int $dislikesCount
+     * @return Destination
+     */
+    public function setDislikesCount(int $dislikesCount): self
+    {
+        $this->dislikesCount = $dislikesCount;
+
+        return $this;
+    }
 }

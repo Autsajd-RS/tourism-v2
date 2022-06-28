@@ -36,18 +36,23 @@ class DestinationNormalizer implements NormalizerInterface
 
         /** @var DestinationLike[] $liked */
         $liked = $this->likeRepository->isLikedByUser(destination: $object, user: $user);
+        /** @var DestinationLike[] $disliked */
+        $disliked = $this->likeRepository->isDislikedByUser(destination: $object, user: $user);
 
-        if (count($liked)) {
-            if ($liked[0]->isNegative()) {
-                $object->setDislikedByMe(true);
-            } else {
-                $object->setLikedByMe(true);
-            }
+        if (count($liked) && !$liked[0]->isDeleted()) {
+            $object->setLikedByMe(true);
+        }
+
+        if (count($disliked) && !$disliked[0]->isDeleted()) {
+            $object->setDislikedByMe(true);
         }
 
         if ($object->getCity()?->getId() === $user->getCity()?->getId()) {
             $object->setNearMe(true);
         }
+
+        $object->setLikesCount($this->likeRepository->likeCount(destination: $object));
+        $object->setDislikesCount($this->likeRepository->dislikeCount(destination: $object));
 
         return $this->normalizer->normalize(object: $object, context: ['groups' => Destination::GROUP_READ]);
     }

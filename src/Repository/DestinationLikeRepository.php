@@ -6,6 +6,8 @@ use App\Entity\Destination;
 use App\Entity\DestinationLike;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -46,7 +48,20 @@ class DestinationLikeRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('dl')
             ->where('dl.destinationId = :destinationId')
             ->andWhere('dl.userId = :userId')
-            ->andWhere('dl.deleted = 0')
+            ->andWhere('dl.negative = 0')
+            ->setParameters(['destinationId' => $destination->getId(), 'userId' => $user->getId()])
+            ->orderBy('dl.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function isDislikedByUser(Destination $destination, User $user)
+    {
+        return $this->createQueryBuilder('dl')
+            ->where('dl.destinationId = :destinationId')
+            ->andWhere('dl.userId = :userId')
+            ->andWhere('dl.negative = 1')
             ->setParameters(['destinationId' => $destination->getId(), 'userId' => $user->getId()])
             ->orderBy('dl.id', 'DESC')
             ->setMaxResults(1)
@@ -74,5 +89,37 @@ class DestinationLikeRepository extends ServiceEntityRepository
             ->setParameter('destinationId', $destination->getId())
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function likeCount(Destination $destination)
+    {
+        return $this->createQueryBuilder('dl')
+            ->select('COUNT(dl.id) as likesCount')
+            ->where('dl.deleted = 0')
+            ->andWhere('dl.negative = 0')
+            ->andWhere('dl.destinationId = :destinationId')
+            ->setParameters(['destinationId' => $destination->getId()])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function dislikeCount(Destination $destination)
+    {
+        return $this->createQueryBuilder('dl')
+            ->select('COUNT(dl.id) as dislikesCount')
+            ->where('dl.deleted = 0')
+            ->andWhere('dl.negative = 1')
+            ->andWhere('dl.destinationId = :destinationId')
+            ->setParameters(['destinationId' => $destination->getId()])
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

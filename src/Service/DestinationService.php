@@ -187,15 +187,23 @@ class DestinationService
     {
         /** @var DestinationLike[] $previousLike */
         $previousLike = $this->likeRepository->isLikedByUser(destination: $destination, user: $user);
+        /** @var DestinationLike[] $previousDislike */
+        $previousDislike = $this->likeRepository->isDislikedByUser(destination: $destination, user: $user);
+
+        if (count($previousDislike)) {
+            $previousDislike[0]->setDeleted(true);
+            $this->crud->patch($previousDislike[0]);
+        }
+
         if (count($previousLike)) {
-            if ($previousLike[0]->isNegative()) {
-                $previousLike[0]->setDeleted(true);
-                $this->crud->patch(entity: $previousLike[0]);
+            if ($previousLike[0]->isDeleted()) {
+                $previousLike[0]->setDeleted(false);
             } else {
                 $previousLike[0]->setDeleted(true);
-                $this->crud->patch($previousLike[0]);
-                return $previousLike[0];
             }
+
+            $this->crud->patch($previousLike[0]);
+            return $previousLike[0];
         }
 
         $destination->setPopularity($destination->getPopularity() + 1);
@@ -217,17 +225,23 @@ class DestinationService
     {
         /** @var DestinationLike[] $previousLike */
         $previousLike = $this->likeRepository->isLikedByUser(destination: $destination, user: $user);
+        /** @var DestinationLike[] $previousDislike */
+        $previousDislike = $this->likeRepository->isDislikedByUser(destination: $destination, user: $user);
 
         if (count($previousLike)) {
-            if ($previousLike[0]->isNegative()) {
-                $previousLike[0]->setDeleted(true);
-                $this->crud->patch($previousLike[0]);
-                return $previousLike[0];
+            $previousLike[0]->setDeleted(true);
+            $this->crud->patch(entity: $previousLike);
+        }
+
+        if (count($previousDislike)) {
+            if ($previousDislike[0]->isDeleted()) {
+                $previousDislike[0]->setDeleted(false);
+            } else {
+                $previousDislike[0]->setDeleted(true);
             }
 
-            $previousLike[0]->setDeleted(true);
-            $this->crud->patch(entity: $previousLike[0]);
-
+            $this->crud->patch($previousDislike[0]);
+            return $previousDislike[0];
         }
 
         $like = (new DestinationLike())
