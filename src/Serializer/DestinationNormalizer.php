@@ -5,6 +5,7 @@ namespace App\Serializer;
 use App\Entity\Destination;
 use App\Entity\DestinationLike;
 use App\Entity\User;
+use App\Entity\WishList;
 use App\Repository\DestinationLikeRepository;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -53,6 +54,20 @@ class DestinationNormalizer implements NormalizerInterface
 
         $object->setLikesCount($this->likeRepository->likeCount(destination: $object));
         $object->setDislikesCount($this->likeRepository->dislikeCount(destination: $object));
+
+        if ($user->getWishLists()) {
+            foreach ($user->getWishLists() as $list) {
+                /** @var WishList $list */
+                if ($list->getDestinations()->contains($object)) {
+                    if ($list->getType() === WishList::FAVORITES) {
+                        $object->setIsInFavoritesList(true);
+                    }
+                    if ($list->getType() === WishList::TO_VISIT) {
+                        $object->setIsInToVisitList(true);
+                    }
+                }
+            }
+        }
 
         return $this->normalizer->normalize(object: $object, context: ['groups' => Destination::GROUP_READ]);
     }

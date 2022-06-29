@@ -97,6 +97,14 @@ class Destination
     #[Groups([self::GROUP_READ])]
     private int $dislikesCount = 0;
 
+    //virtual property
+    #[Groups([self::GROUP_READ])]
+    private bool $isInToVisitList = false;
+
+    //virtual property
+    #[Groups([self::GROUP_READ])]
+    private bool $isInFavoritesList = false;
+
     public function __construct()
     {
         $this->additionalImages = new ArrayCollection();
@@ -377,4 +385,42 @@ class Destination
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isInToVisitList(): bool
+    {
+        return $this->isInToVisitList;
+    }
+
+    /**
+     * @param bool $isInToVisitList
+     * @return Destination
+     */
+    public function setIsInToVisitList(bool $isInToVisitList): self
+    {
+        $this->isInToVisitList = $isInToVisitList;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInFavoritesList(): bool
+    {
+        return $this->isInFavoritesList;
+    }
+
+    /**
+     * @param bool $isInFavoritesList
+     * @return Destination
+     */
+    public function setIsInFavoritesList(bool $isInFavoritesList): self
+    {
+        $this->isInFavoritesList = $isInFavoritesList;
+        return  $this;
+    }
+
+
 }
