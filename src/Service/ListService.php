@@ -74,7 +74,11 @@ class ListService
         /** @var WishList $list */
         $list = $this->listRepository->findByUserAndType(user: $user, type: $type);
 
-        $list->addDestination(destination: $destination);
+        if ($list->getDestinations()->contains($destination)) {
+            $list->removeDestination($destination);
+        } else {
+            $list->addDestination(destination: $destination);
+        }
 
         $this->crud->patch(entity: $list);
 
