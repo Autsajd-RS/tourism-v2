@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\DTO\ErrorResponse;
 use App\Entity\User;
+use App\Entity\WishList;
 use App\Service\AuthorizationService;
 use App\Service\DestinationService;
 use App\Service\ListService;
@@ -63,14 +64,30 @@ class ListController extends BaseController
         return $this->jsonListRead(wishList: $list, status: Response::HTTP_CREATED);
     }
 
-    #[Route(path: '/api/lists/destination', methods: ['POST'])]
-    public function addDestination(Request $request, #[CurrentUser] User $user): JsonResponse
+    #[Route(path: '/api/lists/destinations/{id}/to-visit', methods: ['GET'])]
+    public function addDestinationToVisit(int $id, #[CurrentUser] User $user): JsonResponse
     {
-        $list = $this->listService->appendDestination(request: $request, user: $user);
+        $destination = $this->destinationService->findById(id: $id);
 
-        if ($list instanceof ErrorResponse) {
-            return $this->json($list, Response::HTTP_BAD_REQUEST);
+        if (!$destination) {
+            return $this->json(null);
         }
+
+        $list = $this->listService->appendDestination(user: $user, destination: $destination, type: WishList::TO_VISIT);
+
+        return $this->jsonListRead(wishList: $list, status: Response::HTTP_ACCEPTED);
+    }
+
+    #[Route(path: '/api/lists/destinations/{id}/favorites', methods: ['GET'])]
+    public function addDestinationFavorites(int $id, #[CurrentUser] User $user): JsonResponse
+    {
+        $destination = $this->destinationService->findById(id: $id);
+
+        if (!$destination) {
+            return $this->json(null);
+        }
+
+        $list = $this->listService->appendDestination(user: $user, destination: $destination, type: WishList::FAVORITES);
 
         return $this->jsonListRead(wishList: $list, status: Response::HTTP_ACCEPTED);
     }

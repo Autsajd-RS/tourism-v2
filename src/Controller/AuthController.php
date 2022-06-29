@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\DTO\ErrorResponse;
 use App\Entity\User;
 use App\Service\AuthenticationService;
+use App\Service\ListService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class AuthController extends BaseController
 {
     public function __construct(
-        private AuthenticationService $authenticationService
+        private AuthenticationService $authenticationService,
+        private ListService $listService
     )
     {
     }
@@ -41,6 +43,8 @@ class AuthController extends BaseController
         }
 
         $user = $this->authenticationService->registerUser($user);
+
+        $this->listService->prependUserLists(user: $user);
 
         return $this->jsonUserRead($user);
     }

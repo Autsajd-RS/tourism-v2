@@ -24,6 +24,22 @@ class ListService
         return $this->listRepository->find($id);
     }
 
+    public function prependUserLists(User $user): void
+    {
+        $favorites = (new WishList())
+            ->setName('Omiljeno')
+            ->setType(WishList::FAVORITES)
+            ->setUser($user);
+
+        $toVisit = (new WishList())
+            ->setName('Za posetiti')
+            ->setType(WishList::TO_VISIT)
+            ->setUser($user);
+
+        $this->crud->create(entity: $favorites);
+        $this->crud->create(entity: $toVisit);
+    }
+
     public function create(Request $request, User $user): ErrorResponse|WishList
     {
         $list = $this->crud->deserializeEntity(request: $request, entityClass: WishList::class);
@@ -53,26 +69,10 @@ class ListService
         return $list;
     }
 
-    public function appendDestination(Request $request, User $user): ErrorResponse|WishList
+    public function appendDestination(User $user, Destination $destination, string $type): ErrorResponse|WishList
     {
-        $destination = $this->crud->extractDestinationFromRequest(request: $request);
-
-        if ($destination instanceof ErrorResponse) {
-            return $destination;
-        }
-
-        $list = $this->crud->extractListFromRequest(request: $request);
-
-        if ($list instanceof ErrorResponse) {
-            return $list;
-        }
-
-        if (!$this->authorizationService->authorizeList(list: $list)) {
-            return new ErrorResponse(
-                message: 'Access error',
-                errors: ['list' => 'not valid owner']
-            );
-        }
+        /** @var WishList $list */
+        $list = $this->listRepository->findByUserAndType(user: $user, type: $type);
 
         $list->addDestination(destination: $destination);
 

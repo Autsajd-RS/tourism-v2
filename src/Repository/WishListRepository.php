@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\WishList;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -37,6 +38,20 @@ class WishListRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\NoResultException
+     */
+    public function findByUserAndType(User $user, string $type)
+    {
+        return $this->createQueryBuilder('wl')
+            ->where('wl.user = :user')
+            ->andWhere('wl.type = :type')
+            ->setParameters(['user' => $user, 'type' => $type])
+            ->getQuery()
+            ->getSingleResult();
     }
 
 //    /**
