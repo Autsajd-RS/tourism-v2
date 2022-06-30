@@ -81,6 +81,7 @@ class ListService
         }
 
         $this->crud->patch(entity: $list);
+        $this->crud->getEntityManager()->refresh($list);
 
         return $list;
     }
