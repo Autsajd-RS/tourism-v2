@@ -20,6 +20,7 @@ framework:
             'App\Message\UserRegistered': async
             'App\Message\ImageUploaded': async
             'App\Message\ImageDeleted': async
+            'App\Message\ForgotPasswordRequested': async
 
 # when@test:
 #    framework:

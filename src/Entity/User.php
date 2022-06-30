@@ -87,6 +87,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: WishList::class, orphanRemoval: true)]
     private ArrayCollection|PersistentCollection $wishLists;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private string|null $forgotPasswordVerificationToken = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private DateTimeInterface|null $forgotPasswordTokenExpire = null;
+
     public function __construct()
     {
         $this->destinationComments = new ArrayCollection();
@@ -322,6 +328,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $wishList->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getForgotPasswordVerificationToken(): ?string
+    {
+        return $this->forgotPasswordVerificationToken;
+    }
+
+    public function setForgotPasswordVerificationToken(?string $forgotPasswordVerificationToken): self
+    {
+        $this->forgotPasswordVerificationToken = $forgotPasswordVerificationToken;
+
+        return $this;
+    }
+
+    public function getForgotPasswordTokenExpire(): ?\DateTimeInterface
+    {
+        return $this->forgotPasswordTokenExpire;
+    }
+
+    public function setForgotPasswordTokenExpire(?\DateTimeInterface $forgotPasswordTokenExpire): self
+    {
+        $this->forgotPasswordTokenExpire = $forgotPasswordTokenExpire;
 
         return $this;
     }

@@ -6,6 +6,7 @@
     "require": {
         "php": ">=8.0.2",
         "ext-ctype": "*",
+        "ext-gd": "*",
         "ext-iconv": "*",
         "doctrine/annotations": "^1.13",
         "doctrine/doctrine-bundle": "^2.6",
@@ -23,6 +24,7 @@
         "symfony/console": "6.0.*",
         "symfony/doctrine-messenger": "6.0.*",
         "symfony/dotenv": "6.0.*",
+        "symfony/expression-language": "6.0.*",
         "symfony/flex": "^2",
         "symfony/form": "6.0.*",
         "symfony/framework-bundle": "6.0.*",
@@ -37,8 +39,7 @@
         "symfony/sendgrid-mailer": "6.0.*",
         "symfony/serializer": "6.0.*",
         "symfony/validator": "6.0.*",
-        "symfony/yaml": "6.0.*",
-        "ext-gd": "*"
+        "symfony/yaml": "6.0.*"
     },
     "config": {
         "allow-plugins": {

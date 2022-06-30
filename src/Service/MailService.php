@@ -15,6 +15,9 @@ class MailService
     public const VERIFICATION_MAIL = 'Verification email';
     public const VERIFICATION_MAIL_ID = 'd-ef39b2f70da84acb9da49bb7d933d9ba';
 
+    public const FORGOT_PASSWORD_MAIL = 'Forgot password email';
+    public const FORGOT_PASSWORD_MAIL_ID = 'd-c995c4fb0fc847b1a24e400eb9822d6e';
+
     public function __construct(
         private HttpClientInterface $sendgridClient,
         private LoggerInterface $logger
@@ -29,7 +32,7 @@ class MailService
                 'json' => $mailDto->prepareSelf()
             ]);
         } catch (\JsonException|TransportExceptionInterface $e) {
-            $this->logger->error('FAILED VERIFICATION EMAIL', ['e' => $e]);
+            $this->logger->error('FAILED EMAIL', ['e' => $e]);
         }
     }
 }

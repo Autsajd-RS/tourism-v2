@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\DTO\ErrorResponse;
+use App\DTO\ForgotPasswordCredentials;
+use App\DTO\PasswordChangeCredentials;
 use App\Entity\Category;
 use App\Entity\City;
 use App\Entity\Destination;
@@ -175,6 +177,52 @@ class Crud
         }
 
         return $list;
+    }
+
+    public function extractChangePasswordCredentialsFromRequest(Request $request): ErrorResponse|PasswordChangeCredentials
+    {
+        $credentials = $this->serializer->deserialize((string)$request->getContent(), PasswordChangeCredentials::class, 'json');
+
+        if (!$credentials instanceof PasswordChangeCredentials) {
+            return new ErrorResponse(
+                message: 'Bad request',
+                errors: ['request' => 'Bad request']
+            );
+        }
+
+        $violations = $this->validateEntity(entity: $credentials);
+
+        if (count($violations)) {
+            return new ErrorResponse(
+                message: 'Invalid credentials',
+                errors: self::formatViolations($violations)
+            );
+        }
+
+        return $credentials;
+    }
+
+    public function extractForgotPasswordCredentialsFromRequest(Request $request): ErrorResponse|ForgotPasswordCredentials
+    {
+        $credentials = $this->serializer->deserialize((string)$request->getContent(), ForgotPasswordCredentials::class, 'json');
+
+        if (!$credentials instanceof ForgotPasswordCredentials) {
+            return new ErrorResponse(
+                message: 'Bad request',
+                errors: ['request' => 'Bad request']
+            );
+        }
+
+        $violations = $this->validateEntity(entity: $credentials);
+
+        if (count($violations)) {
+            return new ErrorResponse(
+                message: 'Invalid credentials',
+                errors: self::formatViolations($violations)
+            );
+        }
+
+        return $credentials;
     }
 
     /**
