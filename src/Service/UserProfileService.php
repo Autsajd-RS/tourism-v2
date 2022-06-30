@@ -39,7 +39,7 @@ class UserProfileService
 
             );
 
-            $violations = $this->crud->validateEntity(entity: $user);
+            $violations = $this->crud->validateEntity(entity: $user, group: User::GROUP_PATCH);
 
             if (count($violations) > 0) {
                 return new ErrorResponse(

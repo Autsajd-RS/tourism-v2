@@ -45,8 +45,11 @@ class Crud
         return $this->serializer->deserialize((string)$request->getContent(), $entityClass, 'json');
     }
 
-    public function validateEntity(mixed $entity): ConstraintViolationListInterface
+    public function validateEntity(mixed $entity, string $group = null): ConstraintViolationListInterface
     {
+        if ($group) {
+            return $this->validator->validate($entity, null, ['groups' => $group]);
+        }
         return $this->validator->validate($entity);
     }
 
