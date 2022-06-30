@@ -24,7 +24,7 @@ class ForgotPasswordRequestedHandler
             ->setSubject(MailService::FORGOT_PASSWORD_MAIL)
             ->setTemplateId(MailService::FORGOT_PASSWORD_MAIL_ID)
             ->setDynamicTemplateData([
-                'forgotPasswordUrl' => $this->frontendUrl . '/api/profiles/password/new/' . $message->getVerificationCode()
+                'forgotPasswordUrl' => $this->frontendUrl . '/new-password/' . $message->getVerificationCode()
             ]);
 
         $this->mailService->send($email);
