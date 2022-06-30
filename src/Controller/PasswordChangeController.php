@@ -34,20 +34,24 @@ class PasswordChangeController extends BaseController
         return $this->jsonUserRead($response);
     }
 
-    #[Route(path: '/api/profiles/password/forgot/request', methods: ['GET'])]
-    public function requestToChangePassword(#[CurrentUser] User $user): JsonResponse
+    #[Route(path: '/profiles/password/forgot/request', methods: ['POST'])]
+    public function requestToChangePassword(Request $request): JsonResponse
     {
         //first request to make new password
         //than email with link will be sent
         //than call newPassword api with verification code to complete forgot password process
-        return $this->jsonUserRead($this->profileService->forgotPasswordRequest(user: $user));
+        try {
+            $this->profileService->forgotPasswordRequest(request: $request);
+        } catch (\JsonException $e) {
+        }
+
+        return $this->json('ok', Response::HTTP_OK);
     }
 
-    #[Route(path: '/api/profiles/password/new/{verificationCode}', methods: ['POST'])]
-    public function newPassword(string $verificationCode, #[CurrentUser] User $user, Request $request): JsonResponse
+    #[Route(path: '/profiles/password/new/{verificationCode}', methods: ['POST'])]
+    public function newPassword(string $verificationCode, Request $request): JsonResponse
     {
         $response = $this->profileService->newPassword(
-            user: $user,
             verificationCode: $verificationCode,
             request: $request
         );

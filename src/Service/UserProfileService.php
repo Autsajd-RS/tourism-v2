@@ -7,6 +7,7 @@ use App\DTO\VerificationCheckerData;
 use App\Entity\City;
 use App\Entity\User;
 use App\Message\ForgotPasswordRequested;
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -20,7 +21,8 @@ class UserProfileService
         private Security $security,
         private Crud $crud,
         private UserPasswordHasherInterface $hasher,
-        private MessageBusInterface $bus
+        private MessageBusInterface $bus,
+        private UserRepository $userRepository
     )
     {
     }
@@ -76,26 +78,44 @@ class UserProfileService
         $this->crud->patch($user);
     }
 
-    public function forgotPasswordRequest(User $user): User
+    /**
+     * @throws \JsonException
+     */
+    public function forgotPasswordRequest(Request $request): void
     {
-        $verificationCheckerData = new VerificationCheckerData();
+        $params = json_decode((string)$request->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
-        $user
-            ->setForgotPasswordVerificationToken($verificationCheckerData->getCode())
-            ->setForgotPasswordTokenExpire($verificationCheckerData->getExpireAt());
+        if (isset($params->email) && !empty($params->email)) {
+            $user = $this->userRepository->findOneBy(['email' => $params->email]);
 
-        $this->crud->patch(entity: $user);
+            if ($user) {
+                $verificationCheckerData = new VerificationCheckerData();
 
-        $this->bus->dispatch(new ForgotPasswordRequested(
-            email: $user->getEmail(),
-            verificationCode: $user->getForgotPasswordVerificationToken()
-        ));
+                $user
+                    ->setForgotPasswordVerificationToken($verificationCheckerData->getCode())
+                    ->setForgotPasswordTokenExpire($verificationCheckerData->getExpireAt());
 
-        return $user;
+                $this->crud->patch(entity: $user);
+
+                $this->bus->dispatch(new ForgotPasswordRequested(
+                    email: $user->getEmail(),
+                    verificationCode: $user->getForgotPasswordVerificationToken()
+                ));
+            }
+        }
     }
 
-    public function newPassword(User $user, string $verificationCode, Request $request): ErrorResponse|User
+    public function newPassword(string $verificationCode, Request $request): ErrorResponse|User
     {
+        $user = $this->userRepository->findOneBy(['forgotPasswordVerificationToken' => $verificationCode]);
+
+        if (!$user) {
+            return new ErrorResponse(
+                message: 'Not found',
+                errors: ['user' => 'not found']
+            );
+        }
+
         $shouldMakeNewPassword = AuthorizationService::authorizeForgotPassword(
             user: $user,
             verificationCode: $verificationCode
