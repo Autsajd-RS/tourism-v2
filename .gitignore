@@ -15,4 +15,14 @@
 supervisord.pid
 src/Controller/TestController.php
 env.local
+docker-compose.override.yml
 ###> ANNOYING STUFF ###
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+
+###> liip/imagine-bundle ###
+/public/media/cache/
+###< liip/imagine-bundle ###
+
+/public/destinations/

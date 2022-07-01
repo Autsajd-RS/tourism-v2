@@ -1,0 +1,17 @@
+# Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+services:
+    digitalocean_spaces_client:
+        class: 'AsyncAws\S3\S3Client'
+        arguments:
+            - endpoint: '%env(DIGITALOCEAN_SPACES_ENDPOINT)%'
+              accessKeyId: '%env(DIGITALOCEAN_SPACES_ID)%'
+              accessKeySecret: '%env(DIGITALOCEAN_SPACES_SECRET)%'
+              region: 'us-east-1'
+
+flysystem:
+    storages:
+        cdn.storage:
+            adapter: 'asyncaws'
+            options:
+                client: 'digitalocean_spaces_client'
+                bucket: '%env(DIGITALOCEAN_SPACES_BUCKET)%'
