@@ -267,6 +267,12 @@ class DestinationService
         $this->crud->patch(entity: $destination);
     }
 
+    public function incrementPopularity(Destination $destination): void
+    {
+        $destination->setPopularity($destination->getPopularity() + 1);
+        $this->crud->patch(entity: $destination);
+    }
+
     public function listOfLikesOrDislikes(Destination $destination, bool $likes = true): array
     {
         /** @var DestinationLike[] $list */

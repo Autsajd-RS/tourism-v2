@@ -32,7 +32,7 @@ class DestinationController extends BaseController
             ));
         }
 
-        $this->destinationService->incrementAttendance(destination: $destination);
+        //$this->destinationService->incrementAttendance(destination: $destination);
 
         return $this->jsonDestinationRead(destination: $destination);
     }
@@ -149,5 +149,29 @@ class DestinationController extends BaseController
         ];
 
         return $this->json($list);
+    }
+
+    #[Route(path: '/api/destinations/{id}/increment-attendance', methods: ['GET'])]
+    public function incrementAttendance(int $id): JsonResponse
+    {
+        $destination = $this->destinationService->findById(id: $id);
+
+        if ($destination) {
+            $this->destinationService->incrementAttendance(destination: $destination);
+        }
+
+        return $this->json('ok', Response::HTTP_OK);
+    }
+
+    #[Route(path: '/api/destinations/{id}/increment-popularity', methods: ['GET'])]
+    public function incrementPopularity(int $id): JsonResponse
+    {
+        $destination = $this->destinationService->findById(id: $id);
+
+        if ($destination) {
+            $this->destinationService->incrementPopularity(destination: $destination);
+        }
+
+        return $this->json('ok', Response::HTTP_OK);
     }
 }
