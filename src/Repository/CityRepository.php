@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\City;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,6 +39,32 @@ class CityRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function top3(): array
+    {
+        return array_map(static function ($item) {
+            $item['city']['destinationsCount'] = $item['destinationsCount'];
+            return $item['city'];
+        }, $this->createQueryBuilder('c')
+            ->join('c.destinations', 'destinations')
+            ->select('c as city, COUNT(destinations.id) as destinationsCount')
+            ->groupBy('c.id')
+            ->orderBy('destinationsCount', 'DESC')
+            ->getQuery()
+            ->getArrayResult());
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function findCount()
+    {
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) total')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
 //    /**
