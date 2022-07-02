@@ -51,6 +51,7 @@ class CityRepository extends ServiceEntityRepository
             ->select('c as city, COUNT(destinations.id) as destinationsCount')
             ->groupBy('c.id')
             ->orderBy('destinationsCount', 'DESC')
+            ->setMaxResults(3)
             ->getQuery()
             ->getArrayResult());
     }
