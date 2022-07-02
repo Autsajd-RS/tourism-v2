@@ -78,7 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private City $city;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups([self::GROUP_READ, DestinationComment::GROUP_READ])]
+    #[Groups([self::GROUP_READ, DestinationComment::GROUP_READ, Destination::GROUP_READ])]
     private string $avatar = self::DEFAULT_AVATAR;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: DestinationComment::class, orphanRemoval: true)]
