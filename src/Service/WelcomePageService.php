@@ -21,7 +21,9 @@ class WelcomePageService
         return [
             'destinationCount' => $this->destinationRepository->findCount(),
             'userCount' => $this->userRepository->findCount(),
-            'cities' => $this->cityRepository->top3()
+            'cities' => $this->cityRepository->top3(),
+            'popularity' => $this->destinationRepository->findTopPopular(),
+            'attendance' => $this->destinationRepository->findTopAttended()
         ];
     }
 }

@@ -129,4 +129,22 @@ class DestinationRepository extends ServiceEntityRepository
             return 0;
         }
     }
+
+    public function findTopPopular()
+    {
+        return $this->createQueryBuilder('d')
+            ->orderBy('d.popularity', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findTopAttended()
+    {
+        return $this->createQueryBuilder('d')
+            ->orderBy('d.attendance', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+    }
 }
