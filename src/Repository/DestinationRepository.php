@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Destination;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException as NonUniqueResultExceptionAlias;
+use Doctrine\ORM\NoResultException as NoResultExceptionAlias;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use function Webmozart\Assert\Tests\StaticAnalysis\null;
@@ -114,5 +116,35 @@ class DestinationRepository extends ServiceEntityRepository
         $result['items'] = $paginator->getIterator()->getArrayCopy();
 
         return $result;
+    }
+
+    public function findCount()
+    {
+        try {
+            return $this->createQueryBuilder('d')
+                ->select('COUNT(d.id) total')
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultExceptionAlias|NonUniqueResultExceptionAlias $e) {
+            return 0;
+        }
+    }
+
+    public function findTopPopular()
+    {
+        return $this->createQueryBuilder('d')
+            ->orderBy('d.popularity', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findTopAttended()
+    {
+        return $this->createQueryBuilder('d')
+            ->orderBy('d.attendance', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
     }
 }
