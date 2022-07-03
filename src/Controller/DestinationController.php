@@ -29,7 +29,7 @@ class DestinationController extends BaseController
             return $this->json(new ErrorResponse(
                 message: 'Fetch failed',
                 errors: ['destination', 'not found']
-            ));
+            ), Response::HTTP_NOT_FOUND);
         }
 
         //$this->destinationService->incrementAttendance(destination: $destination);
