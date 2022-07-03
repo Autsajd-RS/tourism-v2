@@ -103,7 +103,7 @@ class DestinationController extends BaseController
             return $this->json(new ErrorResponse(
                 message: 'Fetch failed',
                 errors: ['destination', 'not found']
-            ));
+            ), Response::HTTP_NOT_FOUND);
         }
 
         $like = $this->destinationService->addLike(destination: $destination, user: $user);
@@ -120,7 +120,7 @@ class DestinationController extends BaseController
             return $this->json(new ErrorResponse(
                 message: 'Fetch failed',
                 errors: ['destination', 'not found']
-            ));
+            ), Response::HTTP_NOT_FOUND);
         }
 
         $this->destinationService->undoLike(
@@ -140,7 +140,7 @@ class DestinationController extends BaseController
             return $this->json(new ErrorResponse(
                 message: 'Fetch failed',
                 errors: ['destination', 'not found']
-            ));
+            ), Response::HTTP_NOT_FOUND);
         }
 
         $list = [
