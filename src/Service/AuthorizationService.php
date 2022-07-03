@@ -47,14 +47,14 @@ class AuthorizationService
         if (!password_verify($credentials->getCurrentPassword(), $user->getPassword())) {
             return new ErrorResponse(
                 message: 'Invalid credentials',
-                errors: ['currentPassword' => 'Does not match']
+                errors: ['currentPassword' => 'Uneli ste pogrešnu lozinku']
             );
         }
 
         if ($credentials->getNewPassword() !== $credentials->getRepeatedPassword()) {
             return new ErrorResponse(
                 message: 'Invalid credentials',
-                errors: ['repeatedPassword' => 'Does not match']
+                errors: ['repeatedPassword' => 'Lozinke se ne poklapaju']
             );
         }
 
@@ -66,14 +66,14 @@ class AuthorizationService
         if ($user->getForgotPasswordVerificationToken() !== $verificationCode) {
             return new ErrorResponse(
                 message: 'Invalid credentials',
-                errors: ['verificationCode' => 'Does not match']
+                errors: ['verificationCode' => 'Nepravlian verifikacioni kod']
             );
         }
 
         if ($user->getForgotPasswordTokenExpire() < (new \DateTime())) {
             return new ErrorResponse(
                 message: 'Invalid credentials',
-                errors: ['verificationCode' => 'Verification code expired']
+                errors: ['verificationCode' => 'Verifikcationi kod je istekao']
             );
         }
 
